@@ -13,7 +13,7 @@ type UserRequest struct {
 type User struct {
 	ID                   uuid.V4      `json:"id"`
 	Email                string       `json:"email"`
-	Alumni               Alumni       `json:"alumni"`
+	AlumniID             uuid.V4      `json:"alumniId,omitempty"`
 	Admin                bool         `json:"admin"`
 	CreatedTimestamp     time.ISO8601 `json:"createdTimestamp"`
 	LastUpdatedTimestamp time.ISO8601 `json:"lastUpdatedTimestamp"`

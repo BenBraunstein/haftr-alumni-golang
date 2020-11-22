@@ -9,7 +9,7 @@ type User struct {
 	ID                   uuid.V4    `bson:"id"`
 	Email                string     `bson:"email"`
 	Password             []byte     `bson:"password"`
-	Alumni               Alumni     `bson:"alumni"`
+	AlumniID             uuid.V4    `bson:"alumniId"`
 	Admin                bool       `bson:"admin"`
 	CreatedTimestamp     time.Epoch `bson:"createdTimestamp"`
 	LastUpdatedTimestamp time.Epoch `bson:"lastUpdatedTimestamp"`

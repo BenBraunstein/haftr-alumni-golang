@@ -19,7 +19,7 @@ type App struct {
 // Handler turns the App into an http hander
 func (a *App) Handler() http.HandlerFunc {
 	router := httprouter.New()
-	router.HandlerFunc(http.MethodPost, "/user", a.AddUserHandler)
+	router.HandlerFunc(http.MethodPost, "/users", a.AddUserHandler)
 	router.HandlerFunc(http.MethodPost, "/login", a.LoginUserHandler)
 	h := http.HandlerFunc(router.ServeHTTP)
 	return h

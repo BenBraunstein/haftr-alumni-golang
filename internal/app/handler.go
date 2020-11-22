@@ -11,6 +11,7 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
 )
 
+// AddUserHandler handles an http request to add a new User
 func AddUserHandler(provideTime time.EpochProviderFunc, genUUID uuid.GenV4Func, insertUser db.InsertUserFunc, retrieveUserByEmail db.RetrieveUserByEmailFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req pkg.UserRequest
@@ -28,6 +29,7 @@ func AddUserHandler(provideTime time.EpochProviderFunc, genUUID uuid.GenV4Func, 
 	}
 }
 
+// LoginUserHandler handles an http request to log in a User
 func LoginUserHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req pkg.UserRequest
@@ -51,12 +53,22 @@ func JSONToDTO(DTO interface{}, w http.ResponseWriter, r *http.Request) error {
 	return decoder.Decode(&DTO)
 }
 
+// ServeInternalError serves a 500 error
 func ServeInternalError(err error, w http.ResponseWriter) {
+	type errDTO struct {
+		Message string `json:"message"`
+	}
+	newErr := errDTO{Message: err.Error()}
+	bb, err := json.MarshalIndent(newErr, "", "\t")
+	if err != nil {
+		ServeInternalError(err, w)
+	}
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(err.Error()))
+	w.Write(bb)
 }
 
 //ServeJSON returns a JSON response for an http request

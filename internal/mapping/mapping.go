@@ -9,29 +9,31 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
 )
 
+// ToDbUser maps a UserRequest to an internal User
 func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, provideTime time.EpochProviderFunc) internal.User {
 	return internal.User{
 		ID:                   genUUID(),
 		Email:                strings.ToLower(req.Email),
 		Password:             securePw,
 		Admin:                false,
-		Alumni:               internal.Alumni{},
 		CreatedTimestamp:     provideTime(),
 		LastUpdatedTimestamp: provideTime(),
 	}
 }
 
+// ToDTOUser maps an internal User to a pkg User
 func ToDTOUser(u internal.User) pkg.User {
 	return pkg.User{
 		ID:                   u.ID,
 		Email:                u.Email,
 		Admin:                u.Admin,
-		Alumni:               ToDTOAlumni(u.Alumni),
+		AlumniID:             u.AlumniID,
 		CreatedTimestamp:     u.CreatedTimestamp.ToISO8601(),
 		LastUpdatedTimestamp: u.LastUpdatedTimestamp.ToISO8601(),
 	}
 }
 
+// ToDTOAlumni maps an internal Alumni to a pkg Alumni
 func ToDTOAlumni(a internal.Alumni) pkg.Alumni {
 	return pkg.Alumni{}
 }

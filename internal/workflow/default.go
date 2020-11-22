@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// AddUser adds a new user
 func AddUser(insertUser db.InsertUserFunc, retrieveUserByEmail db.RetrieveUserByEmailFunc, provideTime time.EpochProviderFunc, genUUID uuid.GenV4Func) AddUserFunc {
 	return func(req pkg.UserRequest) (pkg.User, error) {
 		log.Printf("Adding new user with email=%v", req.Email)
@@ -35,6 +36,7 @@ func AddUser(insertUser db.InsertUserFunc, retrieveUserByEmail db.RetrieveUserBy
 	}
 }
 
+// LoginUser logs in a new user
 func LoginUser(retrieveUserByEmail db.RetrieveUserByEmailFunc) LoginUserFunc {
 	return func(req pkg.UserRequest) (pkg.User, error) {
 		log.Printf("Logging in user with email=%v", req.Email)

@@ -10,3 +10,5 @@ const (
 type InsertUserFunc func(u internal.User) error
 
 type RetrieveUserByEmailFunc func(email string) (internal.User, error)
+
+type RetrieveAllAlumniFunc func() ([]internal.Alumni, error)

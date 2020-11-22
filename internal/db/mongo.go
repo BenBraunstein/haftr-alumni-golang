@@ -30,3 +30,21 @@ func RetrieveUserByEmail(provideMongo *mongo.Database) RetrieveUserByEmailFunc {
 		return u, nil
 	}
 }
+
+func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
+	return func() ([]internal.Alumni, error) {
+		col := provideMongo.Collection(alumnisCollectionName)
+		filter := bson.M{}
+
+		cur, err := col.Find(context.Background(), filter)
+		if err != nil {
+			return []internal.Alumni{}, errors.Wrap(err, "db - unable to find any alumnis")
+		}
+		var aa []internal.Alumni
+		if err := cur.Decode(&aa); err != nil {
+			return []internal.Alumni{}, errors.Wrap(err, "db - unable to decode alumnis response")
+		}
+
+		return aa, nil
+	}
+}
