@@ -1,6 +1,7 @@
 package mapping
 
 import (
+	"encoding/base64"
 	"strings"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
@@ -24,7 +25,7 @@ func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, prov
 // ToDTOUser maps an internal User to a pkg User
 func ToDTOUser(u internal.User) pkg.User {
 	return pkg.User{
-		ID:                   u.ID,
+		Token:                base64.StdEncoding.EncodeToString([]byte(u.ID)),
 		Email:                u.Email,
 		Admin:                u.Admin,
 		AlumniID:             u.AlumniID,

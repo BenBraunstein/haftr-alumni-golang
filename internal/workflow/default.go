@@ -1,6 +1,7 @@
 package workflow
 
 import (
+	"encoding/base64"
 	"log"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
@@ -48,6 +49,25 @@ func LoginUser(retrieveUserByEmail db.RetrieveUserByEmailFunc) LoginUserFunc {
 
 		if err := bcrypt.CompareHashAndPassword(user.Password, []byte(req.Password)); err != nil {
 			return pkg.User{}, errors.Wrap(err, "workflow - password is invalid")
+		}
+
+		return mapping.ToDTOUser(user), nil
+	}
+}
+
+// AutoLoginUser auto logs in a user
+func AutoLoginUser(retrieveUserById db.RetrieveUserByIDFunc) AutoLoginUserFunc {
+	return func(encodedId string) (pkg.User, error) {
+		log.Printf("Attempting to auto login user with token=%v", encodedId)
+
+		bb, err := base64.StdEncoding.DecodeString(encodedId)
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to decode token")
+		}
+
+		user, err := retrieveUserById(string(bb))
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to find user with given token")
 		}
 
 		return mapping.ToDTOUser(user), nil

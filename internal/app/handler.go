@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
@@ -47,6 +48,22 @@ func LoginUserHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc) http.Handl
 	}
 }
 
+// AutoLoginUserHandler handles an http request to auto login a user
+func AutoLoginUserHandler(retrieveUserById db.RetrieveUserByIDFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		token := strings.Split(authHeader, " ")[1]
+
+		autologin := workflow.AutoLoginUser(retrieveUserById)
+		user, err := autologin(token)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+		ServeJSON(user, w)
+	}
+}
+
 // JSONToDTO decodes an http request JSON body to a data transfer object
 func JSONToDTO(DTO interface{}, w http.ResponseWriter, r *http.Request) error {
 	decoder := json.NewDecoder(r.Body)
@@ -65,6 +82,8 @@ func ServeInternalError(err error, w http.ResponseWriter) {
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods,", "POST, GET")
+	w.Header().Set("Access-Control-Allow-Headers,", "Content-Type")
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusInternalServerError)

@@ -31,6 +31,19 @@ func RetrieveUserByEmail(provideMongo *mongo.Database) RetrieveUserByEmailFunc {
 	}
 }
 
+func RetrieveUserByID(provideMongo *mongo.Database) RetrieveUserByIDFunc {
+	return func(id string) (internal.User, error) {
+		col := provideMongo.Collection(usersCollectionName)
+		filter := bson.M{"id": id}
+
+		var u internal.User
+		if err := col.FindOne(context.Background(), filter).Decode(&u); err != nil {
+			return internal.User{}, errors.Wrapf(err, "db - unable to find user with id=%v", id)
+		}
+		return u, nil
+	}
+}
+
 func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 	return func() ([]internal.Alumni, error) {
 		col := provideMongo.Collection(alumnisCollectionName)

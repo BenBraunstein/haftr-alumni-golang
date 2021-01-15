@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
@@ -12,8 +13,9 @@ import (
 
 // App is a representation of an App
 type App struct {
-	AddUserHandler   http.HandlerFunc
-	LoginUserHandler http.HandlerFunc
+	AddUserHandler       http.HandlerFunc
+	LoginUserHandler     http.HandlerFunc
+	AutoLoginUserHandler http.HandlerFunc
 }
 
 // Handler turns the App into an http hander
@@ -21,6 +23,7 @@ func (a *App) Handler() http.HandlerFunc {
 	router := httprouter.New()
 	router.HandlerFunc(http.MethodPost, "/users", a.AddUserHandler)
 	router.HandlerFunc(http.MethodPost, "/login", a.LoginUserHandler)
+	router.HandlerFunc(http.MethodGet, "/autologin", a.AutoLoginUserHandler)
 	h := http.HandlerFunc(router.ServeHTTP)
 	return h
 }
@@ -29,8 +32,10 @@ func (a *App) Handler() http.HandlerFunc {
 type OptionalArgs struct {
 	EpochTimeProvider   time.EpochProviderFunc
 	UUIDGenerator       uuid.GenV4Func
+	PhotosS3Bucket      string
 	AddUser             db.InsertUserFunc
 	RetrieveUserByEmail db.RetrieveUserByEmailFunc
+	RetrieveUserByID    db.RetrieveUserByIDFunc
 }
 
 // Option is a representation of a function that modifies optional arguments
@@ -41,8 +46,10 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	oa := OptionalArgs{
 		EpochTimeProvider:   time.CurrentEpoch,
 		UUIDGenerator:       uuid.GenV4,
+		PhotosS3Bucket:      os.Getenv("PHOTOS_S3_BUCKET"),
 		AddUser:             db.InsertUser(provideDb),
 		RetrieveUserByEmail: db.RetrieveUserByEmail(provideDb),
+		RetrieveUserByID:    db.RetrieveUserByID(provideDb),
 	}
 
 	for _, opt := range opts {
@@ -51,9 +58,11 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 
 	addUserHandler := AddUserHandler(oa.EpochTimeProvider, oa.UUIDGenerator, oa.AddUser, oa.RetrieveUserByEmail)
 	loginUserHandler := LoginUserHandler(oa.RetrieveUserByEmail)
+	autologinUserHandler := AutoLoginUserHandler(oa.RetrieveUserByID)
 
 	return App{
-		AddUserHandler:   addUserHandler,
-		LoginUserHandler: loginUserHandler,
+		AddUserHandler:       addUserHandler,
+		LoginUserHandler:     loginUserHandler,
+		AutoLoginUserHandler: autologinUserHandler,
 	}
 }
