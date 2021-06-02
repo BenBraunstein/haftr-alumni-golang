@@ -1,3 +1,5 @@
 Makefile
 main
 main-local
+tmp
+.air.toml

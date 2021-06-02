@@ -5,6 +5,10 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
 )
 
+const (
+	DefaultPageLimit = 20
+)
+
 // User is the internal representation of a user
 type User struct {
 	ID                   uuid.V4    `bson:"id"`
@@ -18,29 +22,32 @@ type User struct {
 
 // Alumni is the internal representation of an Alumni
 type Alumni struct {
-	UserID                uuid.V4    `bson:"id"`
+	ID                    uuid.V4    `bson:"id"`
+	Title                 string     `bson:"title"`
 	Firstname             string     `bson:"firstname"`
 	Middlename            string     `bson:"middlename"`
 	Lastname              string     `bson:"lastname"`
 	MarriedName           string     `bson:"marriedName"`
 	MotherName            string     `bson:"motherName"`
 	FatherName            string     `bson:"fatherName"`
-	CurrentAddress        string     `bson:"address"`
+	SpouseName            string     `bson:"spouseName"`
+	CurrentAddress        Address    `bson:"address"`
 	HomePhone             string     `bson:"homePhone"`
 	CellPhone             string     `bson:"cellPhone"`
 	WorkPhone             string     `bson:"workPhone"`
 	EmailAddress          string     `bson:"emailAddress"`
-	LastYearAttended      string     `bson:"lastYearAttended"`
-	IsraelSchool          string     `bson:"israelSchool"`
-	CollegeAttended       string     `bson:"collegeAttended"`
-	GradSchool            string     `bson:"gradSchool"`
-	Profession            string     `bson:"profession"`
+	MiddleSchool          School     `bson:"middleschool"`
+	HighSchool            School     `bson:"highschool"`
+	IsraelSchool          School     `bson:"israelSchool"`
+	CollegeAttended       School     `bson:"collegeAttended"`
+	GradSchools           []School   `bson:"gradSchools"`
+	Profession            []string   `bson:"profession"`
 	Birthday              string     `bson:"birthday"`
 	Clubs                 []string   `bson:"clubs"`
 	SportsTeams           []string   `bson:"sportsTeams"`
 	Awards                []string   `bson:"awards"`
 	Committees            []string   `bson:"committees"`
-	OldAddresses          []string   `bson:"oldAddresses"`
+	OldAddresses          []Address  `bson:"oldAddresses"`
 	HillelDayCamp         Camp       `bson:"hillelDayCamp"`
 	HillelSleepCamp       Camp       `bson:"hillelSleepCamp"`
 	HiliDayCamp           Camp       `bson:"hiliDayCamp"`
@@ -54,9 +61,60 @@ type Alumni struct {
 	AlumniPositions       []string   `bson:"alumniPositions"`
 	Siblings              []Sibling  `bson:"siblings"`
 	Children              []Child    `bson:"children"`
+	Comment               string     `bson:"comment"`
 	ProfilePictureKey     string     `bson:"profilePictureKey"`
 	CreatedTimestamp      time.Epoch `bson:"createdTimestamp"`
 	LastUpdatedTimestamp  time.Epoch `bson:"lastUpdatedTimestamp"`
+}
+
+type UpdateAlumniRequest struct {
+	Title                 *string    `bson:"title,omitempty"`
+	Firstname             *string    `bson:"firstname,omitempty"`
+	Middlename            *string    `bson:"middlename,omitempty"`
+	Lastname              *string    `bson:"lastname,omitempty"`
+	MarriedName           *string    `bson:"marriedName,omitempty"`
+	MotherName            *string    `bson:"motherName,omitempty"`
+	FatherName            *string    `bson:"fatherName,omitempty"`
+	SpouseName            *string    `bson:"spouseName,omitempty"`
+	CurrentAddress        Address    `bson:"address,omitempty"`
+	HomePhone             *string    `bson:"homePhone,omitempty"`
+	CellPhone             *string    `bson:"cellPhone,omitempty"`
+	WorkPhone             *string    `bson:"workPhone,omitempty"`
+	EmailAddress          *string    `bson:"emailAddress,omitempty"`
+	MiddleSchool          School     `bson:"middleschool,omitempty"`
+	HighSchool            School     `bson:"highschool,omitempty"`
+	IsraelSchool          School     `bson:"israelSchool,omitempty"`
+	CollegeAttended       School     `bson:"collegeAttended,omitempty"`
+	GradSchools           []School   `bson:"gradSchools,omitempty"`
+	Profession            *[]string  `bson:"profession,omitempty"`
+	Birthday              *string    `bson:"birthday,omitempty"`
+	Clubs                 *[]string  `bson:"clubs,omitempty"`
+	SportsTeams           *[]string  `bson:"sportsTeams,omitempty"`
+	Awards                *[]string  `bson:"awards,omitempty"`
+	Committees            *[]string  `bson:"committees,omitempty"`
+	OldAddresses          []Address  `bson:"oldAddresses,omitempty"`
+	HillelDayCamp         Camp       `bson:"hillelDayCamp,omitempty"`
+	HillelSleepCamp       Camp       `bson:"hillelSleepCamp,omitempty"`
+	HiliDayCamp           Camp       `bson:"hiliDayCamp,omitempty"`
+	HiliWhiteCamp         Camp       `bson:"hiliWhiteCamp,omitempty"`
+	HiliInternationalCamp Camp       `bson:"hiliInternationalCamp,omitempty"`
+	HILI                  *bool      `bson:"hili,omitempty"`
+	HILLEL                *bool      `bson:"hillel,omitempty"`
+	HAFTR                 *bool      `bson:"haftr,omitempty"`
+	ParentOfStudent       *bool      `bson:"parentOfStudent,omitempty"`
+	Boards                *[]string  `bson:"boards,omitempty"`
+	AlumniPositions       *[]string  `bson:"alumniPositions,omitempty"`
+	Siblings              []Sibling  `bson:"siblings,omitempty"`
+	Children              []Child    `bson:"children,omitempty"`
+	Comment               *string    `bson:"comment,omitempty"`
+	ProfilePictureKey     string     `bson:"profilePictureKey"`
+	LastUpdatedTimestamp  time.Epoch `bson:"lastUpdatedTimestamp"`
+}
+
+type School struct {
+	Name        string `bson:"name"`
+	YearStarted string `bson:"yearStarted"`
+	YearEnded   string `bson:"yearEnded"`
 }
 
 // Camp is the internal representation of a camp
@@ -71,13 +129,25 @@ type Camp struct {
 
 // Sibling is the internal representation of a Sibling
 type Sibling struct {
-	Name          string `bson:"name"`
+	Firstname     string `bson:"firstname"`
+	Lastname      string `bson:"lastname"`
 	YearCompleted string `bson:"yearCompleted"`
-	School        string `bson:"school"`
+	MiddleSchool  School `bson:"middleSchool"`
+	HighSchool    School `bson:"highSchool"`
 }
 
 // Child is the internal representation of a Child
 type Child struct {
-	Name           string `bson:"name"`
+	Firstname      string `bson:"firstname"`
+	Lastname       string `bson:"lastname"`
 	GraduationYear string `bson:"graduationYear"`
+}
+
+type Address struct {
+	Line1   string `bson:"line1"`
+	Line2   string `bson:"line2"`
+	City    string `bson:"city"`
+	State   string `bson:"state"`
+	Zip     string `bson:"zip"`
+	Country string `bson:"country"`
 }
