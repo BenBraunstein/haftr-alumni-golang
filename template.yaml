@@ -25,7 +25,7 @@ Resources:
   AlumniPhotosBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${ServiceName}-photos
+      BucketName: !Sub ${ServiceName}-photos-${Stage}
 
   ApiGateway:
     Type: AWS::Serverless::Api
