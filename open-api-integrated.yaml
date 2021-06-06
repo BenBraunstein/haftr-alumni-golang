@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  description: APIs for interacting with the HAFTR Alumni Golang Service
+  version: 1.0.0
+  title: HAFTR Alumni Service
+x-amazon-apigateway-policy:
+  Version: "2012-10-17"
+  Statement:
+    - Effect: Allow
+      Principal: "*"
+      Action: execute-api:Invoke
+      Resource:
+        - execute-api:/*
+x-amazon-apigateway-binary-media-types:
+  - "image/jpeg"
+  - "image/png"
+
+paths:
+  /users:
+    post:
+      summary: Create a new User
+      description: Create a new User
+      operationId: createUser
+      tags:
+        - Users
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+  /login:
+    post:
+      summary: Logs in a new User
+      description: Logs in a new User
+      operationId: loginUser
+      tags:
+        - Users
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+  /autologin:
+    get:
+      summary: AutoLogs in a new User
+      description: AutoLogs in a new User
+      operationId: autoLoginUser
+      tags:
+        - Users
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+  /alumni:
+    post:
+      summary: Creates a new Alumni
+      description: Creates a new Alumni
+      operationId: createAlumni
+      tags:
+        - Alumni
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+    get:
+      summary: Retrieve Alumni Page
+      description: Retrieve Alumni Page
+      operationId: retrieveAlumni
+      tags:
+        - Alumni
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+  /alumni/{AlumniID}:
+    get:
+      summary: Retrieve an Alumni by ID
+      description: Retrieve an Alumni by ID
+      operationId: retrieveAlumniByID
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+    patch:
+      summary: Update an Alumni by ID
+      description: Update an Alumni by ID
+      operationId: updateAlumni
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      # requestBody:
+      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      responses:
+        # "200":
+        #   $ref: "#/components/responses/TLOExportResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+  
+components:
+  schemas:
+    CreateTLOExportRequest:
+      description: A JSON request body containing the information needed to create a new TLO Export
+      type: object
+      properties:
+        multiTenancyKey: 
+          type: string
+          example: test-mtk
+    TLOExportResponse:
+      description: A JSON response body representing a TLO Export in the Database
+      type: object
+      properties:
+        id: 
+          type: string
+          example: 37ad8c1e-0187-4e10-8c54-395e3385b4d2
+          format: uuid
+        multiTenancyKey: 
+          type: string
+          example: test-partner
+        status: 
+          type: string
+          example: REQUESTED
+        generatedBy: 
+          type: object
+          properties: 
+            email: 
+              type: string
+              example: uche@esusu.org
+            cognitoId: 
+              type: string
+              example: 2o89pgafqq45m3nok2vm3rvvvg
+        downloadedBy:
+          type: array
+          items:
+            type: object
+            properties: 
+              email: 
+                type: string
+                example: uche@esusu.org
+              cognitoId: 
+                type: string
+                example: 2o89pgafqq45m3nok2vm3rvvvg
+        expiresAt: 
+          type: string
+          example: "2021-01-19T00:00:00.000Z"
+        lastUpdatedTimestamp: 
+          type: string
+          example: "2021-01-12T15:38:17.460Z"
+        createdTimestamp: 
+          type: string
+          example: "2021-01-12T15:38:17.460Z"
+    NotFoundError:
+      description: Document not found error
+      type: object
+      properties:
+        message: 
+          type: string
+          example: "workflow - unable to retrieve tlo export with id=19868f32-60f1-4c62-8b69-381f4b7caed6: db - find tlo export by id failure id=19868f32-60f1-4c62-8b69-381f4b7caed6: Unable to find entity err=mongo: no documents in result"
+    ServerError:
+      description: Internal server error
+      type: object
+      properties:
+        message: 
+          type: string
+          description: Detailed information regarding reason for internal server error
+          example: "workflow - unable unable to publish message details=id:19868f32-60f1-4c62-8b69-381f4b7caed6: ExpiredToken: The security token included in the request is expired
+        status code: 403 request id: 7ab2ac98-f5cb-5f6e-ac4c-f4587694266a"
+  parameters:
+    X-Request-ID:
+      name: X-Request-ID
+      in: header
+      description: The unique identifier for this request transaction
+      required: true
+      schema:
+        type: string
+        format: uuid
+    AlumniID:
+      name: AlumniID
+      in: path
+      description: The unique identifier for an Alumni in the DB
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Limit:
+      name: limit
+      in: query
+      description: The number of documents that should be returned in each page
+      schema:
+        type: integer
+        format: int
+    Page:
+      name: page
+      in: query
+      description: The page of documents you want in the response
+      schema:
+        type: integer
+        format: int
+  requestBodies:
+    CreateTLOExportRequest:
+      description: A JSON request body containing the information needed to create a new TLO Export
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateTLOExportRequest"
+  responses:
+    TLOExportResponse:
+      description: A JSON response body representing a TLO Export in the Database
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TLOExportResponse"
+    NotFound:
+      description: Entity not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+    InteralServerError:
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ServerError"

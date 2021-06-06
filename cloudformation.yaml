@@ -1,0 +1,199 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: A CI/CD pipeline for a golang function.
+
+Parameters:
+  RepositoryName:
+    Description: GitHub repository name
+    Type: String
+    Default: haftr-alumni-golang
+
+Resources:
+  AppPipelineWebhook:
+    Type: 'AWS::CodePipeline::Webhook'
+    Properties:
+      Name: !Sub ${RepositoryName}-pipeline-webhook
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: '{{resolve:secretsmanager:AWSCodeBuild:SecretString:GithubWebhookToken}}'
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: 'refs/heads/{Branch}'
+      TargetPipeline: !Ref AppPipeline
+      TargetAction: SourceAction
+      TargetPipelineVersion: !GetAtt 
+        - AppPipeline
+        - Version
+      RegisterWithThirdParty: true
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:3.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: S3_BUCKET
+            # Type: PLAINTEXT
+            Value: codebuild-pipeline-artifacts
+      Name: !Sub ${RepositoryName}-project
+      ServiceRole: !Sub arn:aws:iam::${AWS::AccountId}:role/codebuild-role
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 10
+      Tags:
+        - Key: Name
+          Value: !Ref RepositoryName
+
+  AppPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
+      ArtifactStore:
+        Type: S3
+        Location: codebuild-pipeline-artifacts
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: BenBraunstein
+                Repo: !Ref RepositoryName
+                Branch: master
+                OAuthToken: '{{resolve:secretsmanager:AWSCodeBuild:SecretString:GithubWebhookToken}}'
+                PollForSourceChanges: false
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: !Ref BuildProject
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: PackagedTemplate
+        - Name: DeployToDev
+          Actions:
+            - Name: CreateChangeSet
+              RunOrder: 1
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                StackName: !Sub ${RepositoryName}-dev
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: !Sub ${RepositoryName}-dev-change-set
+                TemplateConfiguration: PackagedTemplate::dev-configuration.json
+                TemplatePath: PackagedTemplate::packaged.yaml
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              InputArtifacts:
+                - Name: PackagedTemplate
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+            - Name: DeployChangeSet
+              RunOrder: 2
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: !Sub ${RepositoryName}-dev
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: !Sub ${RepositoryName}-dev-change-set
+                OutputFileName: staging-cloudformation-output.json
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              OutputArtifacts:
+                - Name: StagingOutput
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+            - Name: Verify
+              RunOrder: 3
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              Configuration:
+                CustomData: !Sub "Review ${RepositoryName}-dev for deployment to production"
+        - Name: DeployToProduction
+          Actions:
+            - Name: CreateChangeSet
+              RunOrder: 1
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                StackName: !Sub ${RepositoryName}-production
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: !Sub ${RepositoryName}-production-change-set
+                TemplateConfiguration: PackagedTemplate::prod-configuration.json
+                TemplatePath: PackagedTemplate::packaged.yaml
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              InputArtifacts:
+                - Name: PackagedTemplate
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+            - Name: Approve
+              RunOrder: 2
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: 1
+              Configuration:
+                CustomData: !Sub "Review ${RepositoryName}-production change-set"
+            - Name: DeployChangeSet
+              RunOrder: 3
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: !Sub ${RepositoryName}-production
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: !Sub ${RepositoryName}-production-change-set
+                OutputFileName: production-cloudformation-output.json
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              OutputArtifacts:
+                - Name: ProductionOutput
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+  
+  ArtifactS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: codebuild-pipeline-artifacts
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:*
+            Effect: Allow
+            Resource:
+              - !Sub arn:aws:s3:::codebuild-pipeline-artifacts
+              - !Sub arn:aws:s3:::codebuild-pipeline-artifacts/*
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+                - !Sub arn:aws:iam::${AWS::AccountId}:role/codebuild-role

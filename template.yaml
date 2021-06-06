@@ -1,0 +1,121 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Api:
+    OpenApiVersion: 3.0.1
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+
+  ServiceName:
+    Type: String
+    Default: haftr-alumni-golang
+
+  ArtifactStore:
+    Description: S3 Bucket, which will hold the artifacts and open api specs
+    Type: String
+    Default: codebuild-pipeline-artifacts
+
+Resources:
+  AlumniPhotosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${ServiceName}-photos
+
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub ${Stage}
+      EndpointConfiguration: Edge
+      DefinitionBody:
+        "Fn::Transform":
+          Name: AWS::Include
+          Parameters:
+            Location: !Sub s3://${ArtifactStore}/open-api/${ServiceName}/open-api-integrated.yaml
+
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Timeout: 180
+      MemorySize: 512
+      Runtime: go1.x
+      FunctionName: !Sub ${ServiceName}-http-${Stage}
+      Environment:
+        Variables:
+          MONGO_URI: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:MONGO_URI}}"
+          DB_NAME: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:DB_NAME}}"
+          S3_BUCKET: !Ref AlumniPhotosBucket
+          JWT_SECRET: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:JWT_SECRET}}"
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref AlumniPhotosBucket
+      Events:
+        CreateUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users
+            Method: post
+        LoginUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /login
+            Method: post
+        AutoLoginUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /autologin
+            Method: get
+        CreateAlumni:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni
+            Method: post
+        EditAlumni:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}
+            Method: patch
+        RetrieveAlumniByID:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}
+            Method: get
+        RetrieveAlumni:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni
+            Method: get
+
+Outputs:
+  Endpoint:
+    Description: Api endpoint for the HAFTR Alumni API Gateway
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/
+    Export:
+      Name: !Sub ${ServiceName}-endpoint
+  FunctionName:
+    Description: Service Function Name
+    Value: !Sub ${ServiceName}-${Stage}
+    Export:
+      Name: !Sub ${ServiceName}-name
+  FunctionArn:
+    Description: Service Function ARN
+    Value: !GetAtt Function.Arn
+    Export:
+      Name: !Sub ${ServiceName}-arn
+  AlumniPhotosS3Name:
+    Value: !Ref AlumniPhotosBucket
+    Export:
+      Name: !Sub ${ServiceName}-photos-name
