@@ -69,7 +69,7 @@ Resources:
               Configuration:
                 Owner: BenBraunstein
                 Repo: !Ref RepositoryName
-                Branch: master
+                Branch: main
                 OAuthToken: '{{resolve:secretsmanager:AWSCodeBuild:SecretString:GithubWebhookToken}}'
                 PollForSourceChanges: false
               RunOrder: 1
@@ -103,10 +103,10 @@ Resources:
                 ChangeSetName: !Sub ${RepositoryName}-dev-change-set
                 TemplateConfiguration: PackagedTemplate::dev-configuration.json
                 TemplatePath: PackagedTemplate::packaged.yaml
-                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
               InputArtifacts:
                 - Name: PackagedTemplate
-              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
             - Name: DeployChangeSet
               RunOrder: 2
               ActionTypeId:
@@ -120,10 +120,10 @@ Resources:
                 Capabilities: CAPABILITY_IAM
                 ChangeSetName: !Sub ${RepositoryName}-dev-change-set
                 OutputFileName: staging-cloudformation-output.json
-                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
               OutputArtifacts:
                 - Name: StagingOutput
-              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
             - Name: Verify
               RunOrder: 3
               ActionTypeId:
@@ -149,10 +149,10 @@ Resources:
                 ChangeSetName: !Sub ${RepositoryName}-production-change-set
                 TemplateConfiguration: PackagedTemplate::prod-configuration.json
                 TemplatePath: PackagedTemplate::packaged.yaml
-                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
               InputArtifacts:
                 - Name: PackagedTemplate
-              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
             - Name: Approve
               RunOrder: 2
               ActionTypeId:
@@ -175,10 +175,10 @@ Resources:
                 Capabilities: CAPABILITY_IAM
                 ChangeSetName: !Sub ${RepositoryName}-production-change-set
                 OutputFileName: production-cloudformation-output.json
-                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
               OutputArtifacts:
                 - Name: ProductionOutput
-              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/cloudformation-role
+              RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/codepipeline-role
   
   ArtifactS3BucketPolicy:
     Type: AWS::S3::BucketPolicy
