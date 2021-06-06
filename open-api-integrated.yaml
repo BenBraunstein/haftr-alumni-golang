@@ -30,6 +30,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /login:
     post:
       summary: Logs in a new User
@@ -44,6 +50,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /autologin:
     get:
       summary: AutoLogs in a new User
@@ -58,6 +70,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /alumni:
     post:
       summary: Creates a new Alumni
@@ -72,6 +90,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
     get:
       summary: Retrieve Alumni Page
       description: Retrieve Alumni Page
@@ -85,6 +109,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /alumni/{AlumniID}:
     get:
       summary: Retrieve an Alumni by ID
@@ -101,6 +131,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
     patch:
       summary: Update an Alumni by ID
       description: Update an Alumni by ID
@@ -116,6 +152,12 @@ paths:
         #   $ref: "#/components/responses/TLOExportResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   
 components:
   schemas:

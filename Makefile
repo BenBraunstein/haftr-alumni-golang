@@ -44,8 +44,8 @@ build-local:
 run: build-local
 	@echo ">> Running application ..."
 	PORT=8416 \
-	MONGO_URI="mongodb+srv://dbUser:MH646HuSDmjHjfqG@cluster0.w4yor.mongodb.net/<dbName>?retryWrites=true&w=majority" \
+	MONGO_URI= \
 	DB_NAME=haftr \
 	S3_BUCKET=haftr-alumni-photos-dev \
-	JWT_SECRET=6a52a3a680d3677883c4a787872ea95b82a5714ae0619472294d834e032e6db327e64867e376dc4a2e6369b6dd1121bb29c05c478ec12190881a8ec1f90c519a \
+	JWT_SECRET= \
 	./$(OUTPUT_LOCAL)
