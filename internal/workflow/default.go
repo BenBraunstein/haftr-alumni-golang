@@ -56,14 +56,20 @@ func LoginUser(retrieveUserByEmail db.RetrieveUserByEmailFunc, provideTime time.
 			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to find user with email=%v", req.Email)
 		}
 
+		log.Printf("Retrieved user with email=%v", req.Email)
+
 		if err := bcrypt.CompareHashAndPassword(user.Password, []byte(req.Password)); err != nil {
 			return pkg.User{}, "", errors.Wrap(err, "workflow - password is invalid")
 		}
+
+		log.Printf("Password matched")
 
 		uToken, err := token.CreateUserToken(user, provideTime)
 		if err != nil {
 			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to generate JWT token for userId=%v", user.ID)
 		}
+
+		log.Printf("Token generated")
 
 		return mapping.ToDTOUser(user), uToken, nil
 	}

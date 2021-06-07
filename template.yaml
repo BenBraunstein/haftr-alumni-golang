@@ -56,12 +56,6 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref AlumniPhotosBucket
-      VpcConfig:
-        SecurityGroupIds:
-          - sg-05861e941a1395b12
-        SubnetIds:
-          - subnet-0d57372f64fe9d5a3
-          - subnet-0dbad0bfe430deb13
       Events:
         CreateUser:
           Type: Api
