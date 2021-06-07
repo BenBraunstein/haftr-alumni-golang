@@ -68,45 +68,45 @@ type Alumni struct {
 }
 
 type UpdateAlumniRequest struct {
-	Title                 *string    `bson:"title,omitempty"`
-	Firstname             *string    `bson:"firstname,omitempty"`
-	Middlename            *string    `bson:"middlename,omitempty"`
-	Lastname              *string    `bson:"lastname,omitempty"`
-	MarriedName           *string    `bson:"marriedName,omitempty"`
-	MotherName            *string    `bson:"motherName,omitempty"`
-	FatherName            *string    `bson:"fatherName,omitempty"`
-	SpouseName            *string    `bson:"spouseName,omitempty"`
+	Title                 string     `bson:"title,omitempty"`
+	Firstname             string     `bson:"firstname,omitempty"`
+	Middlename            string     `bson:"middlename,omitempty"`
+	Lastname              string     `bson:"lastname,omitempty"`
+	MarriedName           string     `bson:"marriedName,omitempty"`
+	MotherName            string     `bson:"motherName,omitempty"`
+	FatherName            string     `bson:"fatherName,omitempty"`
+	SpouseName            string     `bson:"spouseName,omitempty"`
 	CurrentAddress        Address    `bson:"address,omitempty"`
-	HomePhone             *string    `bson:"homePhone,omitempty"`
-	CellPhone             *string    `bson:"cellPhone,omitempty"`
-	WorkPhone             *string    `bson:"workPhone,omitempty"`
-	EmailAddress          *string    `bson:"emailAddress,omitempty"`
+	HomePhone             string     `bson:"homePhone,omitempty"`
+	CellPhone             string     `bson:"cellPhone,omitempty"`
+	WorkPhone             string     `bson:"workPhone,omitempty"`
+	EmailAddress          string     `bson:"emailAddress,omitempty"`
 	MiddleSchool          School     `bson:"middleschool,omitempty"`
 	HighSchool            School     `bson:"highschool,omitempty"`
 	IsraelSchool          School     `bson:"israelSchool,omitempty"`
 	CollegeAttended       School     `bson:"collegeAttended,omitempty"`
 	GradSchools           []School   `bson:"gradSchools,omitempty"`
-	Profession            *[]string  `bson:"profession,omitempty"`
-	Birthday              *string    `bson:"birthday,omitempty"`
-	Clubs                 *[]string  `bson:"clubs,omitempty"`
-	SportsTeams           *[]string  `bson:"sportsTeams,omitempty"`
-	Awards                *[]string  `bson:"awards,omitempty"`
-	Committees            *[]string  `bson:"committees,omitempty"`
+	Profession            []string   `bson:"profession,omitempty"`
+	Birthday              string     `bson:"birthday,omitempty"`
+	Clubs                 []string   `bson:"clubs,omitempty"`
+	SportsTeams           []string   `bson:"sportsTeams,omitempty"`
+	Awards                []string   `bson:"awards,omitempty"`
+	Committees            []string   `bson:"committees,omitempty"`
 	OldAddresses          []Address  `bson:"oldAddresses,omitempty"`
 	HillelDayCamp         Camp       `bson:"hillelDayCamp,omitempty"`
 	HillelSleepCamp       Camp       `bson:"hillelSleepCamp,omitempty"`
 	HiliDayCamp           Camp       `bson:"hiliDayCamp,omitempty"`
 	HiliWhiteCamp         Camp       `bson:"hiliWhiteCamp,omitempty"`
 	HiliInternationalCamp Camp       `bson:"hiliInternationalCamp,omitempty"`
-	HILI                  *bool      `bson:"hili,omitempty"`
-	HILLEL                *bool      `bson:"hillel,omitempty"`
-	HAFTR                 *bool      `bson:"haftr,omitempty"`
-	ParentOfStudent       *bool      `bson:"parentOfStudent,omitempty"`
-	Boards                *[]string  `bson:"boards,omitempty"`
-	AlumniPositions       *[]string  `bson:"alumniPositions,omitempty"`
+	HILI                  bool       `bson:"hili,omitempty"`
+	HILLEL                bool       `bson:"hillel,omitempty"`
+	HAFTR                 bool       `bson:"haftr,omitempty"`
+	ParentOfStudent       bool       `bson:"parentOfStudent,omitempty"`
+	Boards                []string   `bson:"boards,omitempty"`
+	AlumniPositions       []string   `bson:"alumniPositions,omitempty"`
 	Siblings              []Sibling  `bson:"siblings,omitempty"`
 	Children              []Child    `bson:"children,omitempty"`
-	Comment               *string    `bson:"comment,omitempty"`
+	Comment               string     `bson:"comment,omitempty"`
 	ProfilePictureKey     string     `bson:"profilePictureKey"`
 	LastUpdatedTimestamp  time.Epoch `bson:"lastUpdatedTimestamp"`
 }

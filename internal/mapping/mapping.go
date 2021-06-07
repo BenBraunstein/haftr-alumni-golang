@@ -91,8 +91,8 @@ func ToDBAlumni(r pkg.AlumniRequest, s3Filename string, provideTime time.EpochPr
 
 func ToAlumniUpdate(r pkg.UpdateAlumniRequest, s3Filename string, provideTime time.EpochProviderFunc) internal.UpdateAlumniRequest {
 	bday := ""
-	if *r.Birthday != "" {
-		iso, err := time.NewISO8601(*r.Birthday)
+	if r.Birthday != "" {
+		iso, err := time.NewISO8601(r.Birthday)
 		if err == nil {
 			bday = iso.DateString()
 		}
@@ -118,7 +118,7 @@ func ToAlumniUpdate(r pkg.UpdateAlumniRequest, s3Filename string, provideTime ti
 		CollegeAttended:       internal.School(r.CollegeAttended),
 		GradSchools:           toDBSchools(r.GradSchools),
 		Profession:            r.Profession,
-		Birthday:              &bday,
+		Birthday:              bday,
 		Clubs:                 r.Clubs,
 		SportsTeams:           r.SportsTeams,
 		Awards:                r.AlumniPositions,

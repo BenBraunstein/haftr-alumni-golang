@@ -1,0 +1,584 @@
+{
+	"info": {
+		"_postman_id": "aeb74e69-946e-4170-93d4-fa14061034d2",
+		"name": "haftr-golang",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"body = pm.response.json()\r",
+							"\r",
+							"pm.environment.set(\"token\", body.token)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Add User Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 07 Jun 2021 12:44:33 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "317"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"user\": {\n        \"id\": \"e5e6edb8-14eb-4a68-b2c0-7a301fbdd4ce\",\n        \"email\": \"test@gmail.com\",\n        \"alumniId\": \"\",\n        \"admin\": false\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"body = pm.response.json()\r",
+							"\r",
+							"pm.environment.set(\"token\", body.token)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Login User Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "317"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 07 Jun 2021 14:07:56 GMT"
+						},
+						{
+							"key": "x-amzn-RequestId",
+							"value": "9bb023ab-73e2-484d-8398-6b9765997c7b"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "x-amz-apigw-id",
+							"value": "Ajs4zE9xoAMFhOA="
+						},
+						{
+							"key": "X-Amzn-Trace-Id",
+							"value": "Root=1-60be2838-034cdb4917aecfd17d28efb2;Sampled=0"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 44c3684463dfb1f60dc276fec7fe9d93.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "EWR52-C4"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "B8qh11pLptJpzxwlGDdh2StkaWk_qWTTtGBhZodLOBmNSEYctpDvGQ=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"user\": {\n        \"id\": \"e5e6edb8-14eb-4a68-b2c0-7a301fbdd4ce\",\n        \"email\": \"test@gmail.com\",\n        \"alumniId\": \"\",\n        \"admin\": false\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Autologin User",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/autologin",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"autologin"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Autologin User Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/autologin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"autologin"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"user\": {\n        \"id\": \"e5e6edb8-14eb-4a68-b2c0-7a301fbdd4ce\",\n        \"email\": \"test@gmail.com\",\n        \"alumniId\": \"\",\n        \"admin\": false\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Add Alumni",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "json",
+							"value": "{\n    \"title\": \"Mr\",\n    \"firstname\": \"John\",\n    \"middlename\": \"Mickey\",\n    \"lastname\": \"Doe\",\n    \"marriedName\": \"\",\n    \"motherName\": \"Mary\",\n    \"fatherName\": \"George\",\n    \"spouseName\": \"Barbara\",\n    \"address\": {\n        \"line1\": \"123 Random Street\",\n        \"line2\": \"\",\n        \"city\": \"New York\",\n        \"state\": \"NY\",\n        \"zip\": \"11016\",\n        \"country\": \"USA\"\n    },\n    \"homePhone\": \"123456789\",\n    \"cellPhone\": \"123456789\",\n    \"workPhone\": \"123456789\",\n    \"emailAddress\": \"test@email.com\",\n    \"middleschool\": {\n        \"name\": \"Middle\",\n        \"yearStarted\": \"2000\",\n        \"yearEnded\": \"2003\"\n    },\n    \"highschool\": {\n        \"name\": \"High\",\n        \"yearStarted\": \"2004\",\n        \"yearEnded\": \"2008\"\n    },\n    \"israelSchool\": {\n        \"name\": \"School in Israel\",\n        \"yearStarted\": \"2008\",\n        \"yearEnded\": \"2010\"\n    },\n    \"collegeAttended\": {\n        \"name\": \"College\",\n        \"yearStarted\": \"2011\",\n        \"yearEnded\": \"2015\"\n    },\n    \"gradSchools\": [\n        {\n            \"name\": \"Grad School\",\n            \"yearStarted\": \"2016\",\n            \"yearEnded\": \"2018\"    \n        }\n    ],\n    \"profession\": [\"software engineer\", \"IT Support\"],\n    \"birthday\": \"1990-01-01\",\n    \"clubs\": [\"chess team\"],\n    \"sportsTeams\": [\"hockey team\"],\n    \"awards\": [\"honors\"],\n    \"committees\": [\"yearbook\"],\n    \"oldAddresses\": [\n        {\n            \"line1\": \"123 Old Address\",\n            \"line2\": \"\",\n            \"city\": \"New York\",\n            \"state\": \"NY\",\n            \"zip\": \"11016\",\n            \"country\": \"USA\"    \n        }\n    ],\n    \"hillelDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hillelSleepCamp\": {\n        \"attended\": true,\n        \"startYear\": \"2002\",\n        \"endYear\": \"2004\",\n        \"specialty\": \"Art\",\n        \"camper\": true,\n        \"counselor\": false\n    },\n    \"hiliDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliWhiteCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliInternationalCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hili\": false,\n    \"hillel\": true,\n    \"haftr\": true,\n    \"parentOfStudent\": true,\n    \"boards\": [\"board1\", \"board2\"],\n    \"alumniPositions\": [\"pos1\", \"pos2\"],\n    \"siblings\": [\n        {\n            \"firstname\": \"Sibling\",\n            \"lastname\": \"Doe\",\n            \"yearCompleted\": \"2018\",\n            \"middleSchool\": {\n                \"name\": \"Middle2\",\n                \"yearStarted\": \"2015\",\n                \"yearEnded\": \"2017\"        \n            },\n            \"highSchool\": {\n                \"name\": \"High2\",\n                \"yearStarted\": \"2017\",\n                \"yearEnded\": \"2021\"        \n            }\n        }\n    ],\n    \"children\": [\n        {\n            \"firstname\": \"Child\",\n            \"lastname\": \"Doe\",\n            \"graduatedYear\": \"2021\"\n        }\n    ],\n    \"comment\": \"This is a comment\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "profile",
+							"type": "file",
+							"src": "/C:/Users/BenzB/Pictures/Camera Roll/WIN_20210208_11_36_01_Pro.jpg",
+							"disabled": true
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/alumni",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"alumni"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Add Alumni Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "json",
+									"value": "{\"title\":\"Mr\",\"firstname\":\"John\",\"middlename\":\"Mickey\",\"lastname\":\"Doe\",\"marriedName\":\"\",\"motherName\":\"Mary\",\"fatherName\":\"George\",\"spouseName\":\"Barbara\",\"address\":{\"line1\":\"123 Random Street\",\"line2\":\"\",\"city\":\"New York\",\"state\":\"NY\",\"zip\":\"11016\",\"country\":\"USA\"},\"homePhone\":\"123456789\",\"cellPhone\":\"123456789\",\"workPhone\":\"123456789\",\"emailAddress\":\"test@email.com\",\"middleschool\":{\"name\":\"Middle\",\"yearStarted\":\"2000\",\"yearEnded\":\"2003\"},\"highschool\":{\"name\":\"High\",\"yearStarted\":\"2004\",\"yearEnded\":\"2008\"},\"israelSchool\":{\"name\":\"School in Israel\",\"yearStarted\":\"2008\",\"yearEnded\":\"2010\"},\"collegeAttended\":{\"name\":\"College\",\"yearStarted\":\"2011\",\"yearEnded\":\"2015\"},\"gradSchools\":[{\"name\":\"Grad School\",\"yearStarted\":\"2016\",\"yearEnded\":\"2018\"}],\"profession\":[\"software engineer\",\"IT Support\"],\"birthday\":\"1990-01-01\",\"clubs\":[\"chess team\"],\"sportsTeams\":[\"hockey team\"],\"awards\":[\"honors\"],\"committees\":[\"yearbook\"],\"oldAddresses\":[{\"line1\":\"123 Old Address\",\"line2\":\"\",\"city\":\"New York\",\"state\":\"NY\",\"zip\":\"11016\",\"country\":\"USA\"}],\"hillelDayCamp\":{\"attended\":false,\"startYear\":\"\",\"endYear\":\"\",\"specialty\":\"\",\"camper\":false,\"counselor\":false},\"hillelSleepCamp\":{\"attended\":true,\"startYear\":\"2002\",\"endYear\":\"2004\",\"specialty\":\"Art\",\"camper\":true,\"counselor\":false},\"hiliDayCamp\":{\"attended\":false,\"startYear\":\"\",\"endYear\":\"\",\"specialty\":\"\",\"camper\":false,\"counselor\":false},\"hiliWhiteCamp\":{\"attended\":false,\"startYear\":\"\",\"endYear\":\"\",\"specialty\":\"\",\"camper\":false,\"counselor\":false},\"hiliInternationalCamp\":{\"attended\":false,\"startYear\":\"\",\"endYear\":\"\",\"specialty\":\"\",\"camper\":false,\"counselor\":false},\"hili\":false,\"hillel\":true,\"haftr\":true,\"parentOfStudent\":true,\"boards\":[\"board1\",\"board2\"],\"alumniPositions\":[\"pos1\",\"pos2\"],\"siblings\":[{\"firstname\":\"Sibling\",\"lastname\":\"Doe\",\"yearCompleted\":\"2018\",\"middleSchool\":{\"name\":\"Middle2\",\"yearStarted\":\"2015\",\"yearEnded\":\"2017\"},\"highSchool\":{\"name\":\"High2\",\"yearStarted\":\"2017\",\"yearEnded\":\"2021\"}}],\"children\":[{\"firstname\":\"Child\",\"lastname\":\"Doe\",\"graduatedYear\":\"2021\"}],\"comment\":\"This is a comment\"}",
+									"type": "text"
+								},
+								{
+									"key": "profile",
+									"type": "file",
+									"src": "/C:/Users/BenzB/Pictures/Camera Roll/WIN_20210208_11_36_01_Pro.jpg"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/alumni",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"alumni"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"id\": \"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c\",\n    \"title\": \"Mr\",\n    \"firstname\": \"John\",\n    \"middlename\": \"Mickey\",\n    \"lastname\": \"Doe\",\n    \"marriedName\": \"\",\n    \"motherName\": \"Mary\",\n    \"fatherName\": \"George\",\n    \"spouseName\": \"Barbara\",\n    \"address\": {\n        \"line1\": \"123 Random Street\",\n        \"line2\": \"\",\n        \"city\": \"New York\",\n        \"state\": \"NY\",\n        \"zip\": \"11016\",\n        \"country\": \"USA\"\n    },\n    \"homePhone\": \"123456789\",\n    \"cellPhone\": \"123456789\",\n    \"workPhone\": \"123456789\",\n    \"emailAddress\": \"test@email.com\",\n    \"middleschool\": {\n        \"name\": \"Middle\",\n        \"yearStarted\": \"2000\",\n        \"yearEnded\": \"2003\"\n    },\n    \"highschool\": {\n        \"name\": \"High\",\n        \"yearStarted\": \"2004\",\n        \"yearEnded\": \"2008\"\n    },\n    \"israelSchool\": {\n        \"name\": \"School in Israel\",\n        \"yearStarted\": \"2008\",\n        \"yearEnded\": \"2010\"\n    },\n    \"collegeAttended\": {\n        \"name\": \"College\",\n        \"yearStarted\": \"2011\",\n        \"yearEnded\": \"2015\"\n    },\n    \"gradSchools\": [\n        {\n            \"name\": \"Grad School\",\n            \"yearStarted\": \"2016\",\n            \"yearEnded\": \"2018\"\n        }\n    ],\n    \"profession\": [\n        \"software engineer\",\n        \"IT Support\"\n    ],\n    \"birthday\": \"1990-01-01\",\n    \"clubs\": [\n        \"chess team\"\n    ],\n    \"sportsTeams\": [\n        \"hockey team\"\n    ],\n    \"awards\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"committees\": [\n        \"yearbook\"\n    ],\n    \"oldAddresses\": [\n        {\n            \"line1\": \"123 Old Address\",\n            \"line2\": \"\",\n            \"city\": \"New York\",\n            \"state\": \"NY\",\n            \"zip\": \"11016\",\n            \"country\": \"USA\"\n        }\n    ],\n    \"hillelDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hillelSleepCamp\": {\n        \"attended\": true,\n        \"startYear\": \"2002\",\n        \"endYear\": \"2004\",\n        \"specialty\": \"Art\",\n        \"camper\": true,\n        \"counselor\": false\n    },\n    \"hiliDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliWhiteCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliInternationalCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hili\": false,\n    \"hillel\": true,\n    \"haftr\": true,\n    \"parentOfStudent\": true,\n    \"boards\": [\n        \"board1\",\n        \"board2\"\n    ],\n    \"alumniPositions\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"siblings\": [\n        {\n            \"firstname\": \"Sibling\",\n            \"lastname\": \"Doe\",\n            \"yearCompleted\": \"2018\",\n            \"middleSchool\": {\n                \"name\": \"Middle2\",\n                \"yearStarted\": \"2015\",\n                \"yearEnded\": \"2017\"\n            },\n            \"highSchool\": {\n                \"name\": \"High2\",\n                \"yearStarted\": \"2017\",\n                \"yearEnded\": \"2021\"\n            }\n        }\n    ],\n    \"children\": [\n        {\n            \"firstname\": \"Child\",\n            \"lastname\": \"Doe\",\n            \"graduationYear\": \"\"\n        }\n    ],\n    \"comment\": \"This is a comment\",\n    \"profilePictureURL\": \"https://haftr-alumni-photos-dev.s3.amazonaws.com/d109441e-108d-464e-ab8d-8e8524ec581a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5COZL3EZGB4JQ6KD%2F20210607%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210607T132335Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCuvG82FjF1G%2F81WFm%2BINIVCzMuGbyElK2ySYhvhPFiLAIgJVRqyDjm9ZlVOTXl%2B5N52dywVIdjL9ZTDQ1xIdI%2FyY0qgwMIShABGgw4OTg2NDA4OTQyNTgiDIoSuwFqncMNcWIrWyrgAqA%2BzyHhNRUjS4%2FJ1VQxYNvnu4jes0i7UPC0CU082IqPZkobQUIH6XdDgJ9sJp8ElzVNNhByupxYzkkiUE1xXLssL6yC%2FnDvyd8R%2BOCQHgdXZetd8%2F4EIyWn9eFnGERaPyMtkTyqBxLuxLb5Sr589iV8CIT9hccqij9u0su8yNbrSXGQHGeq43GhcNrQyauTSyO1DzQOrM%2F%2FWEZxhlGf1VH7DQVQVoVIihGL%2BMpcxzbkysHSyBYWE1khT9lCBclGWCcMAzzLzGktgFBcpZZPeE9Nl2fi5sJJMRDesTwSFAkU1CzuQKO37nGBsK%2B4fyNts5nQiy2WNAzBjWQS%2FuvjroZKcWiUtr9LGoS10cnucwfDwJhaBXLeI9QDJB5xc9uv4EwPeDRIm0SRs8FMkhfisvQ0S91EzMR4EMn3P9rD3lVS5kvMyVU4MD06zcslOuckmEHBtQE8jg7yRqGcBdrYYMwwyKjV%2FQU6pgEj4zXzpeeCA4%2FL2POOjAP3LOTmuz3T5ZFkNZVCmzzxruNjkvpJGssGJcLU3UkIQ%2FDFlmsHP%2BUPUu7%2FDNWX2HBEzRS8q6Iw66oI04ajwAw0mGTv7DcJUhXu8O0rausmg3qdkehPVETii9kgSGUQ3Cw0PJwiZppW2v%2BUx%2BrwTMbIh5Bu5R8D88yp%2FbjD4Vv1ny7TMew%2Bogssn49t%2FqOEw5kZhVraVB52&X-Amz-SignedHeaders=host&X-Amz-Signature=19f09f543154878dfd53687885eabf0c342f2080a0382b1fcf1e3b52af2b05e7\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Alumni",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "json",
+							"value": "{\n    \"firstname\": \"Shannon\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "profile",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/alumni/027c8c40-14a2-4616-be58-726cd611c8dc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"alumni",
+						"027c8c40-14a2-4616-be58-726cd611c8dc"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Update Alumni Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "json",
+									"value": "{\"firstname\": \"Ben\"}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/alumni/027c8c40-14a2-4616-be58-726cd611c8dc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"alumni",
+								"027c8c40-14a2-4616-be58-726cd611c8dc"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"id\": \"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c\",\n    \"title\": \"Mr\",\n    \"firstname\": \"Ben\",\n    \"middlename\": \"Mickey\",\n    \"lastname\": \"Doe\",\n    \"marriedName\": \"\",\n    \"motherName\": \"Mary\",\n    \"fatherName\": \"George\",\n    \"spouseName\": \"Barbara\",\n    \"address\": {\n        \"line1\": \"123 Random Street\",\n        \"line2\": \"\",\n        \"city\": \"New York\",\n        \"state\": \"NY\",\n        \"zip\": \"11016\",\n        \"country\": \"USA\"\n    },\n    \"homePhone\": \"123456789\",\n    \"cellPhone\": \"123456789\",\n    \"workPhone\": \"123456789\",\n    \"emailAddress\": \"test@email.com\",\n    \"middleschool\": {\n        \"name\": \"Middle\",\n        \"yearStarted\": \"2000\",\n        \"yearEnded\": \"2003\"\n    },\n    \"highschool\": {\n        \"name\": \"High\",\n        \"yearStarted\": \"2004\",\n        \"yearEnded\": \"2008\"\n    },\n    \"israelSchool\": {\n        \"name\": \"School in Israel\",\n        \"yearStarted\": \"2008\",\n        \"yearEnded\": \"2010\"\n    },\n    \"collegeAttended\": {\n        \"name\": \"College\",\n        \"yearStarted\": \"2011\",\n        \"yearEnded\": \"2015\"\n    },\n    \"gradSchools\": [\n        {\n            \"name\": \"Grad School\",\n            \"yearStarted\": \"2016\",\n            \"yearEnded\": \"2018\"\n        }\n    ],\n    \"profession\": [\n        \"software engineer\",\n        \"IT Support\"\n    ],\n    \"birthday\": \"1990-01-01\",\n    \"clubs\": [\n        \"chess team\"\n    ],\n    \"sportsTeams\": [\n        \"hockey team\"\n    ],\n    \"awards\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"committees\": [\n        \"yearbook\"\n    ],\n    \"oldAddresses\": [\n        {\n            \"line1\": \"123 Old Address\",\n            \"line2\": \"\",\n            \"city\": \"New York\",\n            \"state\": \"NY\",\n            \"zip\": \"11016\",\n            \"country\": \"USA\"\n        }\n    ],\n    \"hillelDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hillelSleepCamp\": {\n        \"attended\": true,\n        \"startYear\": \"2002\",\n        \"endYear\": \"2004\",\n        \"specialty\": \"Art\",\n        \"camper\": true,\n        \"counselor\": false\n    },\n    \"hiliDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliWhiteCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliInternationalCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hili\": false,\n    \"hillel\": true,\n    \"haftr\": true,\n    \"parentOfStudent\": true,\n    \"boards\": [\n        \"board1\",\n        \"board2\"\n    ],\n    \"alumniPositions\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"siblings\": [\n        {\n            \"firstname\": \"Sibling\",\n            \"lastname\": \"Doe\",\n            \"yearCompleted\": \"2018\",\n            \"middleSchool\": {\n                \"name\": \"Middle2\",\n                \"yearStarted\": \"2015\",\n                \"yearEnded\": \"2017\"\n            },\n            \"highSchool\": {\n                \"name\": \"High2\",\n                \"yearStarted\": \"2017\",\n                \"yearEnded\": \"2021\"\n            }\n        }\n    ],\n    \"children\": [\n        {\n            \"firstname\": \"Child\",\n            \"lastname\": \"Doe\",\n            \"graduationYear\": \"\"\n        }\n    ],\n    \"comment\": \"This is a comment\",\n    \"profilePictureURL\": \"https://haftr-alumni-photos-dev.s3.amazonaws.com/d109441e-108d-464e-ab8d-8e8524ec581a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5COZL3EZGB4JQ6KD%2F20210607%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210607T132335Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCuvG82FjF1G%2F81WFm%2BINIVCzMuGbyElK2ySYhvhPFiLAIgJVRqyDjm9ZlVOTXl%2B5N52dywVIdjL9ZTDQ1xIdI%2FyY0qgwMIShABGgw4OTg2NDA4OTQyNTgiDIoSuwFqncMNcWIrWyrgAqA%2BzyHhNRUjS4%2FJ1VQxYNvnu4jes0i7UPC0CU082IqPZkobQUIH6XdDgJ9sJp8ElzVNNhByupxYzkkiUE1xXLssL6yC%2FnDvyd8R%2BOCQHgdXZetd8%2F4EIyWn9eFnGERaPyMtkTyqBxLuxLb5Sr589iV8CIT9hccqij9u0su8yNbrSXGQHGeq43GhcNrQyauTSyO1DzQOrM%2F%2FWEZxhlGf1VH7DQVQVoVIihGL%2BMpcxzbkysHSyBYWE1khT9lCBclGWCcMAzzLzGktgFBcpZZPeE9Nl2fi5sJJMRDesTwSFAkU1CzuQKO37nGBsK%2B4fyNts5nQiy2WNAzBjWQS%2FuvjroZKcWiUtr9LGoS10cnucwfDwJhaBXLeI9QDJB5xc9uv4EwPeDRIm0SRs8FMkhfisvQ0S91EzMR4EMn3P9rD3lVS5kvMyVU4MD06zcslOuckmEHBtQE8jg7yRqGcBdrYYMwwyKjV%2FQU6pgEj4zXzpeeCA4%2FL2POOjAP3LOTmuz3T5ZFkNZVCmzzxruNjkvpJGssGJcLU3UkIQ%2FDFlmsHP%2BUPUu7%2FDNWX2HBEzRS8q6Iw66oI04ajwAw0mGTv7DcJUhXu8O0rausmg3qdkehPVETii9kgSGUQ3Cw0PJwiZppW2v%2BUx%2BrwTMbIh5Bu5R8D88yp%2FbjD4Vv1ny7TMew%2Bogssn49t%2FqOEw5kZhVraVB52&X-Amz-SignedHeaders=host&X-Amz-Signature=19f09f543154878dfd53687885eabf0c342f2080a0382b1fcf1e3b52af2b05e7\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Alumni By ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/alumni/bc4c8f36-9f8f-4c50-87dc-46b5752ae44c",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"alumni",
+						"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Alumni By ID Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/alumni/bc4c8f36-9f8f-4c50-87dc-46b5752ae44c",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"alumni",
+								"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 07 Jun 2021 13:23:35 GMT"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": \"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c\",\n    \"title\": \"Mr\",\n    \"firstname\": \"John\",\n    \"middlename\": \"Mickey\",\n    \"lastname\": \"Doe\",\n    \"marriedName\": \"\",\n    \"motherName\": \"Mary\",\n    \"fatherName\": \"George\",\n    \"spouseName\": \"Barbara\",\n    \"address\": {\n        \"line1\": \"123 Random Street\",\n        \"line2\": \"\",\n        \"city\": \"New York\",\n        \"state\": \"NY\",\n        \"zip\": \"11016\",\n        \"country\": \"USA\"\n    },\n    \"homePhone\": \"123456789\",\n    \"cellPhone\": \"123456789\",\n    \"workPhone\": \"123456789\",\n    \"emailAddress\": \"test@email.com\",\n    \"middleschool\": {\n        \"name\": \"Middle\",\n        \"yearStarted\": \"2000\",\n        \"yearEnded\": \"2003\"\n    },\n    \"highschool\": {\n        \"name\": \"High\",\n        \"yearStarted\": \"2004\",\n        \"yearEnded\": \"2008\"\n    },\n    \"israelSchool\": {\n        \"name\": \"School in Israel\",\n        \"yearStarted\": \"2008\",\n        \"yearEnded\": \"2010\"\n    },\n    \"collegeAttended\": {\n        \"name\": \"College\",\n        \"yearStarted\": \"2011\",\n        \"yearEnded\": \"2015\"\n    },\n    \"gradSchools\": [\n        {\n            \"name\": \"Grad School\",\n            \"yearStarted\": \"2016\",\n            \"yearEnded\": \"2018\"\n        }\n    ],\n    \"profession\": [\n        \"software engineer\",\n        \"IT Support\"\n    ],\n    \"birthday\": \"1990-01-01\",\n    \"clubs\": [\n        \"chess team\"\n    ],\n    \"sportsTeams\": [\n        \"hockey team\"\n    ],\n    \"awards\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"committees\": [\n        \"yearbook\"\n    ],\n    \"oldAddresses\": [\n        {\n            \"line1\": \"123 Old Address\",\n            \"line2\": \"\",\n            \"city\": \"New York\",\n            \"state\": \"NY\",\n            \"zip\": \"11016\",\n            \"country\": \"USA\"\n        }\n    ],\n    \"hillelDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hillelSleepCamp\": {\n        \"attended\": true,\n        \"startYear\": \"2002\",\n        \"endYear\": \"2004\",\n        \"specialty\": \"Art\",\n        \"camper\": true,\n        \"counselor\": false\n    },\n    \"hiliDayCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliWhiteCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hiliInternationalCamp\": {\n        \"attended\": false,\n        \"startYear\": \"\",\n        \"endYear\": \"\",\n        \"specialty\": \"\",\n        \"camper\": false,\n        \"counselor\": false\n    },\n    \"hili\": false,\n    \"hillel\": true,\n    \"haftr\": true,\n    \"parentOfStudent\": true,\n    \"boards\": [\n        \"board1\",\n        \"board2\"\n    ],\n    \"alumniPositions\": [\n        \"pos1\",\n        \"pos2\"\n    ],\n    \"siblings\": [\n        {\n            \"firstname\": \"Sibling\",\n            \"lastname\": \"Doe\",\n            \"yearCompleted\": \"2018\",\n            \"middleSchool\": {\n                \"name\": \"Middle2\",\n                \"yearStarted\": \"2015\",\n                \"yearEnded\": \"2017\"\n            },\n            \"highSchool\": {\n                \"name\": \"High2\",\n                \"yearStarted\": \"2017\",\n                \"yearEnded\": \"2021\"\n            }\n        }\n    ],\n    \"children\": [\n        {\n            \"firstname\": \"Child\",\n            \"lastname\": \"Doe\",\n            \"graduationYear\": \"\"\n        }\n    ],\n    \"comment\": \"This is a comment\",\n    \"profilePictureURL\": \"https://haftr-alumni-photos-dev.s3.amazonaws.com/d109441e-108d-464e-ab8d-8e8524ec581a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5COZL3EZGB4JQ6KD%2F20210607%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210607T132335Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCuvG82FjF1G%2F81WFm%2BINIVCzMuGbyElK2ySYhvhPFiLAIgJVRqyDjm9ZlVOTXl%2B5N52dywVIdjL9ZTDQ1xIdI%2FyY0qgwMIShABGgw4OTg2NDA4OTQyNTgiDIoSuwFqncMNcWIrWyrgAqA%2BzyHhNRUjS4%2FJ1VQxYNvnu4jes0i7UPC0CU082IqPZkobQUIH6XdDgJ9sJp8ElzVNNhByupxYzkkiUE1xXLssL6yC%2FnDvyd8R%2BOCQHgdXZetd8%2F4EIyWn9eFnGERaPyMtkTyqBxLuxLb5Sr589iV8CIT9hccqij9u0su8yNbrSXGQHGeq43GhcNrQyauTSyO1DzQOrM%2F%2FWEZxhlGf1VH7DQVQVoVIihGL%2BMpcxzbkysHSyBYWE1khT9lCBclGWCcMAzzLzGktgFBcpZZPeE9Nl2fi5sJJMRDesTwSFAkU1CzuQKO37nGBsK%2B4fyNts5nQiy2WNAzBjWQS%2FuvjroZKcWiUtr9LGoS10cnucwfDwJhaBXLeI9QDJB5xc9uv4EwPeDRIm0SRs8FMkhfisvQ0S91EzMR4EMn3P9rD3lVS5kvMyVU4MD06zcslOuckmEHBtQE8jg7yRqGcBdrYYMwwyKjV%2FQU6pgEj4zXzpeeCA4%2FL2POOjAP3LOTmuz3T5ZFkNZVCmzzxruNjkvpJGssGJcLU3UkIQ%2FDFlmsHP%2BUPUu7%2FDNWX2HBEzRS8q6Iw66oI04ajwAw0mGTv7DcJUhXu8O0rausmg3qdkehPVETii9kgSGUQ3Cw0PJwiZppW2v%2BUx%2BrwTMbIh5Bu5R8D88yp%2FbjD4Vv1ny7TMew%2Bogssn49t%2FqOEw5kZhVraVB52&X-Amz-SignedHeaders=host&X-Amz-Signature=19f09f543154878dfd53687885eabf0c342f2080a0382b1fcf1e3b52af2b05e7\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get All Alumni",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/dev/alumni?limit=0&page=",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dev",
+						"alumni"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "0"
+						},
+						{
+							"key": "page",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get All Alumni",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/dev/alumni?limit=0&page=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dev",
+								"alumni"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "0"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": \"bc4c8f36-9f8f-4c50-87dc-46b5752ae44c\",\n        \"title\": \"Mr\",\n        \"firstname\": \"John\",\n        \"middlename\": \"Mickey\",\n        \"lastname\": \"Doe\",\n        \"marriedName\": \"\",\n        \"motherName\": \"Mary\",\n        \"fatherName\": \"George\",\n        \"spouseName\": \"Barbara\",\n        \"address\": {\n            \"line1\": \"123 Random Street\",\n            \"line2\": \"\",\n            \"city\": \"New York\",\n            \"state\": \"NY\",\n            \"zip\": \"11016\",\n            \"country\": \"USA\"\n        },\n        \"homePhone\": \"123456789\",\n        \"cellPhone\": \"123456789\",\n        \"workPhone\": \"123456789\",\n        \"emailAddress\": \"test@email.com\",\n        \"middleschool\": {\n            \"name\": \"Middle\",\n            \"yearStarted\": \"2000\",\n            \"yearEnded\": \"2003\"\n        },\n        \"highschool\": {\n            \"name\": \"High\",\n            \"yearStarted\": \"2004\",\n            \"yearEnded\": \"2008\"\n        },\n        \"israelSchool\": {\n            \"name\": \"School in Israel\",\n            \"yearStarted\": \"2008\",\n            \"yearEnded\": \"2010\"\n        },\n        \"collegeAttended\": {\n            \"name\": \"College\",\n            \"yearStarted\": \"2011\",\n            \"yearEnded\": \"2015\"\n        },\n        \"gradSchools\": [\n            {\n                \"name\": \"Grad School\",\n                \"yearStarted\": \"2016\",\n                \"yearEnded\": \"2018\"\n            }\n        ],\n        \"profession\": [\n            \"software engineer\",\n            \"IT Support\"\n        ],\n        \"birthday\": \"1990-01-01\",\n        \"clubs\": [\n            \"chess team\"\n        ],\n        \"sportsTeams\": [\n            \"hockey team\"\n        ],\n        \"awards\": [\n            \"pos1\",\n            \"pos2\"\n        ],\n        \"committees\": [\n            \"yearbook\"\n        ],\n        \"oldAddresses\": [\n            {\n                \"line1\": \"123 Old Address\",\n                \"line2\": \"\",\n                \"city\": \"New York\",\n                \"state\": \"NY\",\n                \"zip\": \"11016\",\n                \"country\": \"USA\"\n            }\n        ],\n        \"hillelDayCamp\": {\n            \"attended\": false,\n            \"startYear\": \"\",\n            \"endYear\": \"\",\n            \"specialty\": \"\",\n            \"camper\": false,\n            \"counselor\": false\n        },\n        \"hillelSleepCamp\": {\n            \"attended\": true,\n            \"startYear\": \"2002\",\n            \"endYear\": \"2004\",\n            \"specialty\": \"Art\",\n            \"camper\": true,\n            \"counselor\": false\n        },\n        \"hiliDayCamp\": {\n            \"attended\": false,\n            \"startYear\": \"\",\n            \"endYear\": \"\",\n            \"specialty\": \"\",\n            \"camper\": false,\n            \"counselor\": false\n        },\n        \"hiliWhiteCamp\": {\n            \"attended\": false,\n            \"startYear\": \"\",\n            \"endYear\": \"\",\n            \"specialty\": \"\",\n            \"camper\": false,\n            \"counselor\": false\n        },\n        \"hiliInternationalCamp\": {\n            \"attended\": false,\n            \"startYear\": \"\",\n            \"endYear\": \"\",\n            \"specialty\": \"\",\n            \"camper\": false,\n            \"counselor\": false\n        },\n        \"hili\": false,\n        \"hillel\": true,\n        \"haftr\": true,\n        \"parentOfStudent\": true,\n        \"boards\": [\n            \"board1\",\n            \"board2\"\n        ],\n        \"alumniPositions\": [\n            \"pos1\",\n            \"pos2\"\n        ],\n        \"siblings\": [\n            {\n                \"firstname\": \"Sibling\",\n                \"lastname\": \"Doe\",\n                \"yearCompleted\": \"2018\",\n                \"middleSchool\": {\n                    \"name\": \"Middle2\",\n                    \"yearStarted\": \"2015\",\n                    \"yearEnded\": \"2017\"\n                },\n                \"highSchool\": {\n                    \"name\": \"High2\",\n                    \"yearStarted\": \"2017\",\n                    \"yearEnded\": \"2021\"\n                }\n            }\n        ],\n        \"children\": [\n            {\n                \"firstname\": \"Child\",\n                \"lastname\": \"Doe\",\n                \"graduationYear\": \"\"\n            }\n        ],\n        \"comment\": \"This is a comment\",\n        \"profilePictureURL\": \"https://haftr-alumni-photos-dev.s3.amazonaws.com/d109441e-108d-464e-ab8d-8e8524ec581a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5COZL3EZGB4JQ6KD%2F20210607%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210607T132335Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCuvG82FjF1G%2F81WFm%2BINIVCzMuGbyElK2ySYhvhPFiLAIgJVRqyDjm9ZlVOTXl%2B5N52dywVIdjL9ZTDQ1xIdI%2FyY0qgwMIShABGgw4OTg2NDA4OTQyNTgiDIoSuwFqncMNcWIrWyrgAqA%2BzyHhNRUjS4%2FJ1VQxYNvnu4jes0i7UPC0CU082IqPZkobQUIH6XdDgJ9sJp8ElzVNNhByupxYzkkiUE1xXLssL6yC%2FnDvyd8R%2BOCQHgdXZetd8%2F4EIyWn9eFnGERaPyMtkTyqBxLuxLb5Sr589iV8CIT9hccqij9u0su8yNbrSXGQHGeq43GhcNrQyauTSyO1DzQOrM%2F%2FWEZxhlGf1VH7DQVQVoVIihGL%2BMpcxzbkysHSyBYWE1khT9lCBclGWCcMAzzLzGktgFBcpZZPeE9Nl2fi5sJJMRDesTwSFAkU1CzuQKO37nGBsK%2B4fyNts5nQiy2WNAzBjWQS%2FuvjroZKcWiUtr9LGoS10cnucwfDwJhaBXLeI9QDJB5xc9uv4EwPeDRIm0SRs8FMkhfisvQ0S91EzMR4EMn3P9rD3lVS5kvMyVU4MD06zcslOuckmEHBtQE8jg7yRqGcBdrYYMwwyKjV%2FQU6pgEj4zXzpeeCA4%2FL2POOjAP3LOTmuz3T5ZFkNZVCmzzxruNjkvpJGssGJcLU3UkIQ%2FDFlmsHP%2BUPUu7%2FDNWX2HBEzRS8q6Iw66oI04ajwAw0mGTv7DcJUhXu8O0rausmg3qdkehPVETii9kgSGUQ3Cw0PJwiZppW2v%2BUx%2BrwTMbIh5Bu5R8D88yp%2FbjD4Vv1ny7TMew%2Bogssn49t%2FqOEw5kZhVraVB52&X-Amz-SignedHeaders=host&X-Amz-Signature=19f09f543154878dfd53687885eabf0c342f2080a0382b1fcf1e3b52af2b05e7\"\n    }\n]"
+				}
+			]
+		}
+	]
+}

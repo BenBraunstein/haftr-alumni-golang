@@ -1,0 +1,9 @@
+{
+    "user": {
+        "id": "28773e7c-e136-41eb-8e6f-100d13413af6",
+        "email": "test@gmail.com",
+        "alumniId": "",
+        "admin": false
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw"
+}

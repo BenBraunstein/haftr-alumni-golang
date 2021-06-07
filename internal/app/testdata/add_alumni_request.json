@@ -1,0 +1,136 @@
+{
+    "title": "Mr",
+    "firstname": "John",
+    "middlename": "Mickey",
+    "lastname": "Doe",
+    "marriedName": "",
+    "motherName": "Mary",
+    "fatherName": "George",
+    "spouseName": "Barbara",
+    "address": {
+        "line1": "123 Random Street",
+        "line2": "",
+        "city": "New York",
+        "state": "NY",
+        "zip": "11016",
+        "country": "USA"
+    },
+    "homePhone": "123456789",
+    "cellPhone": "123456789",
+    "workPhone": "123456789",
+    "emailAddress": "test@email.com",
+    "middleschool": {
+        "name": "Middle",
+        "yearStarted": "2000",
+        "yearEnded": "2003"
+    },
+    "highschool": {
+        "name": "High",
+        "yearStarted": "2004",
+        "yearEnded": "2008"
+    },
+    "israelSchool": {
+        "name": "School in Israel",
+        "yearStarted": "2008",
+        "yearEnded": "2010"
+    },
+    "collegeAttended": {
+        "name": "College",
+        "yearStarted": "2011",
+        "yearEnded": "2015"
+    },
+    "gradSchools": [
+        {
+            "name": "Grad School",
+            "yearStarted": "2016",
+            "yearEnded": "2018"    
+        }
+    ],
+    "profession": ["software engineer", "IT Support"],
+    "birthday": "1990-01-01",
+    "clubs": ["chess team"],
+    "sportsTeams": ["hockey team"],
+    "awards": ["honors"],
+    "committees": ["yearbook"],
+    "oldAddresses": [
+        {
+            "line1": "123 Old Address",
+            "line2": "",
+            "city": "New York",
+            "state": "NY",
+            "zip": "11016",
+            "country": "USA"    
+        }
+    ],
+    "hillelDayCamp": {
+        "attended": false,
+        "startYear": "",
+        "endYear": "",
+        "specialty": "",
+        "camper": false,
+        "counselor": false
+    },
+    "hillelSleepCamp": {
+        "attended": true,
+        "startYear": "2002",
+        "endYear": "2004",
+        "specialty": "Art",
+        "camper": true,
+        "counselor": false
+    },
+    "hiliDayCamp": {
+        "attended": false,
+        "startYear": "",
+        "endYear": "",
+        "specialty": "",
+        "camper": false,
+        "counselor": false
+    },
+    "hiliWhiteCamp": {
+        "attended": false,
+        "startYear": "",
+        "endYear": "",
+        "specialty": "",
+        "camper": false,
+        "counselor": false
+    },
+    "hiliInternationalCamp": {
+        "attended": false,
+        "startYear": "",
+        "endYear": "",
+        "specialty": "",
+        "camper": false,
+        "counselor": false
+    },
+    "hili": false,
+    "hillel": true,
+    "haftr": true,
+    "parentOfStudent": true,
+    "boards": ["board1", "board2"],
+    "alumniPositions": ["pos1", "pos2"],
+    "siblings": [
+        {
+            "firstname": "Sibling",
+            "lastname": "Doe",
+            "yearCompleted": "2018",
+            "middleSchool": {
+                "name": "Middle2",
+                "yearStarted": "2015",
+                "yearEnded": "2017"        
+            },
+            "highSchool": {
+                "name": "High2",
+                "yearStarted": "2017",
+                "yearEnded": "2021"        
+            }
+        }
+    ],
+    "children": [
+        {
+            "firstname": "Child",
+            "lastname": "Doe",
+            "graduatedYear": "2021"
+        }
+    ],
+    "comment": "This is a comment"
+}

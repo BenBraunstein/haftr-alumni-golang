@@ -23,11 +23,11 @@ paths:
       operationId: createUser
       tags:
         - Users
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateUser"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -43,11 +43,11 @@ paths:
       operationId: loginUser
       tags:
         - Users
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      requestBody:
+        $ref: "#/components/requestBodies/LoginUser"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -63,11 +63,11 @@ paths:
       operationId: autoLoginUser
       tags:
         - Users
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      parameters:
+        - $ref: "#/components/parameters/AuthToken"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -83,11 +83,13 @@ paths:
       operationId: createAlumni
       tags:
         - Alumni
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      parameters:
+        - $ref: "#/components/parameters/AuthToken"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateUpdateAlumni"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -102,11 +104,13 @@ paths:
       operationId: retrieveAlumni
       tags:
         - Alumni
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      parameters:
+        - $ref: "#/components/parameters/AuthToken"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Page"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/AlumniPageResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -124,11 +128,9 @@ paths:
         - Alumni
       parameters:
         - $ref: "#/components/parameters/AlumniID"
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -145,11 +147,11 @@ paths:
         - Alumni
       parameters:
         - $ref: "#/components/parameters/AlumniID"
-      # requestBody:
-      #   $ref: "#/components/requestBodies/CreateTLOExportRequest"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateUpdateAlumni"
       responses:
-        # "200":
-        #   $ref: "#/components/responses/TLOExportResponse"
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:
@@ -161,63 +163,395 @@ paths:
   
 components:
   schemas:
-    CreateTLOExportRequest:
-      description: A JSON request body containing the information needed to create a new TLO Export
+    CreateLoginUserRequest:
+      description: A JSON request body containing the information needed to create a new User
       type: object
       properties:
-        multiTenancyKey: 
+        email: 
           type: string
-          example: test-mtk
-    TLOExportResponse:
-      description: A JSON response body representing a TLO Export in the Database
+          example: test@gmail.com
+        password: 
+          type: string
+          example: password
+    CreateLoginUserResponse:
+      description: A JSON response body containing the user information and a their JWT Token
       type: object
       properties:
-        id: 
-          type: string
-          example: 37ad8c1e-0187-4e10-8c54-395e3385b4d2
-          format: uuid
-        multiTenancyKey: 
-          type: string
-          example: test-partner
-        status: 
-          type: string
-          example: REQUESTED
-        generatedBy: 
+        user: 
           type: object
           properties: 
+            id: 
+              type: string
+              example: 28773e7c-e136-41eb-8e6f-100d13413af6
             email: 
               type: string
-              example: uche@esusu.org
-            cognitoId: 
+              example: test@gmail.com
+            alumniId: 
               type: string
-              example: 2o89pgafqq45m3nok2vm3rvvvg
-        downloadedBy:
+              example: 28773e7c-e136-41eb-8e6f-100d13413af6
+            admin: 
+              type: boolean
+              example: false
+        token: 
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw
+    AlumniRequest:
+      description: A JSON containing information to create or update an Alumni
+      type: object
+      properties:
+        title: 
+          type: string
+          example: Mr
+        firstname: 
+          type: string
+          example: John
+        middlename: 
+          type: string
+          example: Mickey
+        lastname: 
+          type: string
+          example: Doe
+        marriedName: 
+          type: string
+          example: 
+        motherName: 
+          type: string
+          example: Mary
+        fatherName: 
+          type: string
+          example: George
+        spouseName: 
+          type: string
+          example: Barbara
+        address: 
+          type: object
+          properties: 
+            line1: 
+              type: string
+              example: 123 Random Street
+            line2: 
+              type: string
+              example: 
+            city: 
+              type: string
+              example: New York
+            state: 
+              type: string
+              example: NY
+            zip: 
+              type: string
+              example: 11016
+            country: 
+              type: string
+              example: USA
+        homePhone: 
+          type: string
+          example: 123456789
+        cellPhone: 
+          type: string
+          example: 123456789
+        workPhone: 
+          type: string
+          example: 123456789
+        emailAddress: 
+          type: string
+          example: test@email.com
+        middleschool: 
+          type: object
+          properties: 
+            name: 
+              type: string
+              example: Middle
+            yearStarted: 
+              type: string
+              example: 2000
+            yearEnded: 
+              type: string
+              example: 2003
+        highschool: 
+          type: object
+          properties: 
+            name: 
+              type: string
+              example: High
+            yearStarted: 
+              type: string
+              example: 2004
+            yearEnded: 
+              type: string
+              example: 2008
+        israelSchool: 
+          type: object
+          properties: 
+            name: 
+              type: string
+              example: School in Israel
+            yearStarted: 
+              type: string
+              example: 2008
+            yearEnded: 
+              type: string
+              example: 2010
+        collegeAttended: 
+          type: object
+          properties: 
+            name: 
+              type: string
+              example: College
+            yearStarted: 
+              type: string
+              example: 2011
+            yearEnded: 
+              type: string
+              example: 2015
+        gradSchools: 
           type: array
-          items:
+          items: 
             type: object
             properties: 
-              email: 
+              name: 
                 type: string
-                example: uche@esusu.org
-              cognitoId: 
+                example: Grad School
+              yearStarted: 
                 type: string
-                example: 2o89pgafqq45m3nok2vm3rvvvg
-        expiresAt: 
+                example: 2016
+              yearEnded: 
+                type: string
+                example: 2018
+        profession: 
+          type: array
+          items: 
+            type: string
+            example: software engineer
+        birthday: 
           type: string
-          example: "2021-01-19T00:00:00.000Z"
-        lastUpdatedTimestamp: 
+          format: date
+          example: 1990-01-01
+        clubs: 
+          type: array
+          items: 
+            type: string
+            example: chess team
+        sportsTeams: 
+          type: array
+          items: 
+            type: string
+            example: hockey team
+        awards: 
+          type: array
+          items: 
+            type: string
+            example: pos1
+        committees: 
+          type: array
+          items: 
+            type: string
+            example: yearbook
+        oldAddresses: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              line1: 
+                type: string
+                example: 123 Old Address
+              line2: 
+                type: string
+                example: 
+              city: 
+                type: string
+                example: New York
+              state: 
+                type: string
+                example: NY
+              zip: 
+                type: string
+                example: 11016
+              country: 
+                type: string
+                example: USA
+        hillelDayCamp: 
+          type: object
+          properties: 
+            attended: 
+              type: boolean
+            startYear: 
+              type: string
+              example: 
+            endYear: 
+              type: string
+              example: 
+            specialty: 
+              type: string
+              example: 
+            camper: 
+              type: boolean
+            counselor: 
+              type: boolean
+        hillelSleepCamp: 
+          type: object
+          properties: 
+            attended: 
+              type: boolean
+            startYear: 
+              type: string
+              example: 2002
+            endYear: 
+              type: string
+              example: 2004
+            specialty: 
+              type: string
+              example: Art
+            camper: 
+              type: boolean
+            counselor: 
+              type: boolean
+        hiliDayCamp: 
+          type: object
+          properties: 
+            attended: 
+              type: boolean
+            startYear: 
+              type: string
+              example: 
+            endYear: 
+              type: string
+              example: 
+            specialty: 
+              type: string
+              example: 
+            camper: 
+              type: boolean
+            counselor: 
+              type: boolean
+        hiliWhiteCamp: 
+          type: object
+          properties: 
+            attended: 
+              type: boolean
+            startYear: 
+              type: string
+              example: 
+            endYear: 
+              type: string
+              example: 
+            specialty: 
+              type: string
+              example: 
+            camper: 
+              type: boolean
+            counselor: 
+              type: boolean
+        hiliInternationalCamp: 
+          type: object
+          properties: 
+            attended: 
+              type: boolean
+            startYear: 
+              type: string
+              example: 
+            endYear: 
+              type: string
+              example: 
+            specialty: 
+              type: string
+              example: 
+            camper: 
+              type: boolean
+            counselor: 
+              type: boolean
+        hili: 
+          type: boolean
+        hillel: 
+          type: boolean
+        haftr: 
+          type: boolean
+        parentOfStudent: 
+          type: boolean
+        boards: 
+          type: array
+          items: 
+            type: string
+            example: board1
+        alumniPositions: 
+          type: array
+          items: 
+            type: string
+            example: pos1
+        siblings: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              firstname: 
+                type: string
+                example: Sibling
+              lastname: 
+                type: string
+                example: Doe
+              yearCompleted: 
+                type: string
+                example: 2018
+              middleSchool: 
+                type: object
+                properties: 
+                  name: 
+                    type: string
+                    example: Middle2
+                  yearStarted: 
+                    type: string
+                    example: 2015
+                  yearEnded: 
+                    type: string
+                    example: 2017
+              highSchool: 
+                type: object
+                properties: 
+                  name: 
+                    type: string
+                    example: High2
+                  yearStarted: 
+                    type: string
+                    example: 2017
+                  yearEnded: 
+                    type: string
+                    example: 2021
+        children: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              firstname: 
+                type: string
+                example: Child
+              lastname: 
+                type: string
+                example: Doe
+              graduationYear: 
+                type: string
+                example: 
+        comment: 
           type: string
-          example: "2021-01-12T15:38:17.460Z"
-        createdTimestamp: 
-          type: string
-          example: "2021-01-12T15:38:17.460Z"
+          example: This is a comment
+    AlumniResponse:
+      description: A JSON response body containing an alumni's information
+      allOf:
+        - $ref: "#/components/schemas/AlumniRequest"
+        - type: object
+          properties:
+            id: 
+              type: string
+              example: bc4c8f36-9f8f-4c50-87dc-46b5752ae44c
+            profilePictureURL: 
+              type: string
+              example: https://haftr-alumni-photos-dev.s3.amazonaws.com/d109441e-108d-464e-ab8d-8e8524ec581a?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA5COZL3EZGB4JQ6KD%2F20210607%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20210607T132335Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCuvG82FjF1G%2F81WFm%2BINIVCzMuGbyElK2ySYhvhPFiLAIgJVRqyDjm9ZlVOTXl%2B5N52dywVIdjL9ZTDQ1xIdI%2FyY0qgwMIShABGgw4OTg2NDA4OTQyNTgiDIoSuwFqncMNcWIrWyrgAqA%2BzyHhNRUjS4%2FJ1VQxYNvnu4jes0i7UPC0CU082IqPZkobQUIH6XdDgJ9sJp8ElzVNNhByupxYzkkiUE1xXLssL6yC%2FnDvyd8R%2BOCQHgdXZetd8%2F4EIyWn9eFnGERaPyMtkTyqBxLuxLb5Sr589iV8CIT9hccqij9u0su8yNbrSXGQHGeq43GhcNrQyauTSyO1DzQOrM%2F%2FWEZxhlGf1VH7DQVQVoVIihGL%2BMpcxzbkysHSyBYWE1khT9lCBclGWCcMAzzLzGktgFBcpZZPeE9Nl2fi5sJJMRDesTwSFAkU1CzuQKO37nGBsK%2B4fyNts5nQiy2WNAzBjWQS%2FuvjroZKcWiUtr9LGoS10cnucwfDwJhaBXLeI9QDJB5xc9uv4EwPeDRIm0SRs8FMkhfisvQ0S91EzMR4EMn3P9rD3lVS5kvMyVU4MD06zcslOuckmEHBtQE8jg7yRqGcBdrYYMwwyKjV%2FQU6pgEj4zXzpeeCA4%2FL2POOjAP3LOTmuz3T5ZFkNZVCmzzxruNjkvpJGssGJcLU3UkIQ%2FDFlmsHP%2BUPUu7%2FDNWX2HBEzRS8q6Iw66oI04ajwAw0mGTv7DcJUhXu8O0rausmg3qdkehPVETii9kgSGUQ3Cw0PJwiZppW2v%2BUx%2BrwTMbIh5Bu5R8D88yp%2FbjD4Vv1ny7TMew%2Bogssn49t%2FqOEw5kZhVraVB52&X-Amz-SignedHeaders=host&X-Amz-Signature=19f09f543154878dfd53687885eabf0c342f2080a0382b1fcf1e3b52af2b05e7
     NotFoundError:
       description: Document not found error
       type: object
       properties:
         message: 
           type: string
-          example: "workflow - unable to retrieve tlo export with id=19868f32-60f1-4c62-8b69-381f4b7caed6: db - find tlo export by id failure id=19868f32-60f1-4c62-8b69-381f4b7caed6: Unable to find entity err=mongo: no documents in result"
+          example: "workflow - unable to retrieve alumni  with id=19868f32-60f1-4c62-8b69-381f4b7caed6: db - find alumni by id failure id=19868f32-60f1-4c62-8b69-381f4b7caed6: Unable to find entity err=mongo: no documents in result"
     ServerError:
       description: Internal server error
       type: object
@@ -225,8 +559,7 @@ components:
         message: 
           type: string
           description: Detailed information regarding reason for internal server error
-          example: "workflow - unable unable to publish message details=id:19868f32-60f1-4c62-8b69-381f4b7caed6: ExpiredToken: The security token included in the request is expired
-        status code: 403 request id: 7ab2ac98-f5cb-5f6e-ac4c-f4587694266a"
+          example: "workflow - unable unable to upload profile to S3 details=id:19868f32-60f1-4c62-8b69-381f4b7caed6: ExpiredToken: The security token included in the request is expired status code: 403 request id: 7ab2ac98-f5cb-5f6e-ac4c-f4587694266a"
   parameters:
     X-Request-ID:
       name: X-Request-ID
@@ -258,20 +591,65 @@ components:
       schema:
         type: integer
         format: int
+    AuthToken:
+      name: Authorization
+      in: header
+      description: A JWT token identifying the user
+      required: true
+      schema:
+        type: string
+        example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6ZmFsc2UsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6IjIwMjEtMDYtMDlUMDA6MDA6MDAuMDAwWiIsInVzZXJfaWQiOiIyN2U5YWE0ZS02OTI4LTQxZmUtYWJmMy1hYzU1YzU5OWQ1NTQifQ.YqHMh2lWyOhWNLloG-Pm9bOcriKKrZU7QAF8xDmh3kw
   requestBodies:
-    CreateTLOExportRequest:
-      description: A JSON request body containing the information needed to create a new TLO Export
+    CreateUser:
+      description: A JSON request body containing the information needed to create a new user
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CreateTLOExportRequest"
+            $ref: "#/components/schemas/CreateLoginUserRequest"
+    LoginUser:
+      description: A JSON request body containing the information needed to login a user
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateLoginUserRequest"
+    CreateUpdateAlumni:
+      description: A request containing the information needed to Create/Update an Alumni
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              json:
+                $ref: "#/components/schemas/AlumniRequest"
+              profile:
+                type: string
+                format: base64
+            required:
+              - json
+          encoding:
+            profile:
+              contentType: image/jpeg, image/png
   responses:
-    TLOExportResponse:
-      description: A JSON response body representing a TLO Export in the Database
+    CreateLoginUser:
+      description: A JSON response body containing user information and their JWT Token
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TLOExportResponse"
+            $ref: "#/components/schemas/CreateLoginUserResponse"
+    AlumniResponse:
+      description: A JSON response body containing an Alumni's information
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AlumniResponse"
+    AlumniPageResponse:
+      description: A JSON response body containing a page of Alumni and their information
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AlumniResponse"
     NotFound:
       description: Entity not found
       content:
