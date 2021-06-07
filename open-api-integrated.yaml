@@ -213,7 +213,6 @@ components:
           example: Doe
         marriedName: 
           type: string
-          example: 
         motherName: 
           type: string
           example: Mary
