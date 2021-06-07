@@ -231,7 +231,6 @@ components:
               example: 123 Random Street
             line2: 
               type: string
-              example: 
             city: 
               type: string
               example: New York
@@ -357,7 +356,6 @@ components:
                 example: 123 Old Address
               line2: 
                 type: string
-                example: 
               city: 
                 type: string
                 example: New York
@@ -377,13 +375,10 @@ components:
               type: boolean
             startYear: 
               type: string
-              example: 
             endYear: 
               type: string
-              example: 
             specialty: 
               type: string
-              example: 
             camper: 
               type: boolean
             counselor: 
@@ -413,13 +408,10 @@ components:
               type: boolean
             startYear: 
               type: string
-              example: 
             endYear: 
               type: string
-              example: 
             specialty: 
               type: string
-              example: 
             camper: 
               type: boolean
             counselor: 
@@ -431,13 +423,10 @@ components:
               type: boolean
             startYear: 
               type: string
-              example: 
             endYear: 
               type: string
-              example: 
             specialty: 
               type: string
-              example: 
             camper: 
               type: boolean
             counselor: 
@@ -449,13 +438,10 @@ components:
               type: boolean
             startYear: 
               type: string
-              example: 
             endYear: 
               type: string
-              example: 
             specialty: 
               type: string
-              example: 
             camper: 
               type: boolean
             counselor: 
@@ -529,7 +515,6 @@ components:
                 example: Doe
               graduationYear: 
                 type: string
-                example: 
         comment: 
           type: string
           example: This is a comment
