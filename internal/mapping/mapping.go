@@ -25,9 +25,10 @@ func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, prov
 // ToDTOUser maps an internal User to a pkg User
 func ToDTOUser(u internal.User) pkg.User {
 	return pkg.User{
-		Email: u.Email,
-		Admin: u.Admin,
-		// AlumniID:             u.AlumniID,
+		ID:       u.ID,
+		Email:    u.Email,
+		Admin:    u.Admin,
+		AlumniID: u.AlumniID,
 	}
 }
 
@@ -269,8 +270,3 @@ func toDTOChildren(cc []internal.Child) []pkg.Child {
 	}
 	return newCC
 }
-
-// // ToDTOAlumni maps an internal Alumni to a pkg Alumni
-// func ToDTOAlumni(a internal.Alumni) pkg.Alumni {
-// 	return pkg.Alumni{}
-// }
