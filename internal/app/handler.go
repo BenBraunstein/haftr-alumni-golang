@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	allowedMimeTypes = []string{"image/jpeg", "image/png", "application/octet-stream"}
+	allowedMimeTypes = []string{"image/jpeg", "image/png"}
 )
 
 // AddUserHandler handles an http request to add a new User
@@ -134,7 +134,7 @@ func AddAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 			fileData = pkg.FileData{
 				Content:     &buf,
 				Header:      fh,
-				ContentType: getFileContentType(tee),
+				ContentType: getFileContentType(tee, fh.Filename),
 			}
 		}
 
@@ -192,7 +192,7 @@ func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 			fileData = pkg.FileData{
 				Content:     &buf,
 				Header:      fh,
-				ContentType: getFileContentType(tee),
+				ContentType: getFileContentType(tee, fh.Filename),
 			}
 		}
 
@@ -348,10 +348,23 @@ func getAuthToken(r *http.Request) string {
 	return ""
 }
 
-func getFileContentType(r io.Reader) string {
+func getFileContentType(r io.Reader, fn string) string {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r)
 	mimeType, _ := mimetype.DetectReader(buf)
+	if mimeType.String() != "application/octet-stream" {
+		return mimeType.String()
+	}
+	extArr := strings.Split(fn, ".")
+	ext := extArr[len(extArr)-1]
+	switch ext {
+	case "jpg":
+		return "image/jpeg"
+	case "jpeg":
+		return "image/jpeg"
+	case "png":
+		return "image/png"
+	}
 	return mimeType.String()
 }
 
