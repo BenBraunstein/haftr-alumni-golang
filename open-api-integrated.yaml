@@ -14,6 +14,7 @@ x-amazon-apigateway-policy:
 x-amazon-apigateway-binary-media-types:
   - "image/jpeg"
   - "image/png"
+  - "application/octet-stream"
 
 paths:
   /users:
@@ -612,7 +613,7 @@ components:
               - json
           encoding:
             profile:
-              contentType: image/jpeg, image/png
+              contentType: image/jpeg, image/png, application/octet-stream
   responses:
     CreateLoginUser:
       description: A JSON response body containing user information and their JWT Token

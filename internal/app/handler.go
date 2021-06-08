@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	allowedMimeTypes = []string{"image/jpeg", "image/png"}
+	allowedMimeTypes = []string{"image/jpeg", "image/png", "application/octet-stream"}
 )
 
 // AddUserHandler handles an http request to add a new User
