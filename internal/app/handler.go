@@ -214,7 +214,7 @@ func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 	}
 }
 
-func UpdateAlumniOptionsHandler() http.HandlerFunc {
+func CorsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS, DELETE")
