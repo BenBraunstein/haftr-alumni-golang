@@ -12,13 +12,15 @@ import (
 
 // ToDbUser maps a UserRequest to an internal User
 func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, provideTime time.EpochProviderFunc) internal.User {
+	currentTime := provideTime()
+
 	return internal.User{
 		ID:                   genUUID(),
 		Email:                strings.ToLower(req.Email),
 		Password:             securePw,
 		Admin:                false,
-		CreatedTimestamp:     provideTime(),
-		LastUpdatedTimestamp: provideTime(),
+		CreatedTimestamp:     currentTime,
+		LastUpdatedTimestamp: currentTime,
 	}
 }
 

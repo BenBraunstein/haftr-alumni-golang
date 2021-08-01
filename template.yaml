@@ -87,6 +87,12 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /alumni/{alumniId}
             Method: patch
+        EditAlumniOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}
+            Method: options
         RetrieveAlumniByID:
           Type: Api
           Properties:

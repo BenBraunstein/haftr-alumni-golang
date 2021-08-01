@@ -15,13 +15,14 @@ import (
 
 // App is a representation of an App
 type App struct {
-	AddUserHandler            http.HandlerFunc
-	LoginUserHandler          http.HandlerFunc
-	AutoLoginUserHandler      http.HandlerFunc
-	AddAlumniHandler          http.HandlerFunc
-	RetrieveAlumniByIDHandler http.HandlerFunc
-	RetrieveAllAlumniHandler  http.HandlerFunc
-	UpdateAlumniHandler       http.HandlerFunc
+	AddUserHandler             http.HandlerFunc
+	LoginUserHandler           http.HandlerFunc
+	AutoLoginUserHandler       http.HandlerFunc
+	AddAlumniHandler           http.HandlerFunc
+	RetrieveAlumniByIDHandler  http.HandlerFunc
+	RetrieveAllAlumniHandler   http.HandlerFunc
+	UpdateAlumniHandler        http.HandlerFunc
+	UpdateAlumniOptionsHandler http.HandlerFunc
 }
 
 // Handler turns the App into an http hander
@@ -32,6 +33,7 @@ func (a *App) Handler() http.HandlerFunc {
 	router.HandlerFunc(http.MethodGet, "/autologin", a.AutoLoginUserHandler)
 	router.HandlerFunc(http.MethodPost, "/alumni", a.AddAlumniHandler)
 	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.UpdateAlumniHandler)
+	router.HandlerFunc(http.MethodOptions, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.UpdateAlumniOptionsHandler)
 	router.HandlerFunc(http.MethodGet, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.RetrieveAlumniByIDHandler)
 	router.HandlerFunc(http.MethodGet, "/alumni", a.RetrieveAllAlumniHandler)
 	h := http.HandlerFunc(router.ServeHTTP)
@@ -90,16 +92,18 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	autologinUserHandler := AutoLoginUserHandler(oa.RetrieveUserByID, oa.EpochTimeProvider)
 	addAlumniHandler := AddAlumniHandler(oa.RetrieveUserByID, oa.InsertAlumni, oa.ReplaceUser, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL)
 	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL)
+	updateAlumniOptionsHandler := UpdateAlumniOptionsHandler()
 	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
 	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
 
 	return App{
-		AddUserHandler:            addUserHandler,
-		LoginUserHandler:          loginUserHandler,
-		AutoLoginUserHandler:      autologinUserHandler,
-		AddAlumniHandler:          addAlumniHandler,
-		RetrieveAlumniByIDHandler: retrieveAlumniByIdHandler,
-		RetrieveAllAlumniHandler:  retrieveAllAlumniHandler,
-		UpdateAlumniHandler:       updateAlumniHandler,
+		AddUserHandler:             addUserHandler,
+		LoginUserHandler:           loginUserHandler,
+		AutoLoginUserHandler:       autologinUserHandler,
+		AddAlumniHandler:           addAlumniHandler,
+		RetrieveAlumniByIDHandler:  retrieveAlumniByIdHandler,
+		RetrieveAllAlumniHandler:   retrieveAllAlumniHandler,
+		UpdateAlumniHandler:        updateAlumniHandler,
+		UpdateAlumniOptionsHandler: updateAlumniOptionsHandler,
 	}
 }
