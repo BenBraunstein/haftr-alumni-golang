@@ -63,18 +63,36 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /users
             Method: post
+        UserOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users
+            Method: options
         LoginUser:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /login
             Method: post
+        LoginOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /login
+            Method: options
         AutoLoginUser:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
             Path: /autologin
             Method: get
+        AutoLoginOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /autologin
+            Method: options
         CreateAlumni:
           Type: Api
           Properties:
@@ -87,7 +105,7 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /alumni/{alumniId}
             Method: patch
-        EditAlumniOptions:
+        AlumniOptions:
           Type: Api
           Properties:
             RestApiId: !Ref ApiGateway
