@@ -36,6 +36,22 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+    options:
+      summary: Users Preflight Options
+      description: Users Preflight Options
+      operationId: usersPreflightOptions
+      tags:
+        - Users
+      responses:
+        "204":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
   /login:
     post:
       summary: Logs in a new User
@@ -56,6 +72,22 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+    options:
+      summary: Login Preflight Options
+      description: Login Preflight Options
+      operationId: loginPreflightOptions
+      tags:
+        - Users
+      responses:
+        "204":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
   /autologin:
     get:
       summary: AutoLogs in a new User
@@ -76,6 +108,22 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+    options:
+      summary: AutoLogin Preflight Options
+      description: AutoLogin Preflight Options
+      operationId: autoLoginPreflightOptions
+      tags:
+        - Users
+      responses:
+        "204":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
   /alumni:
     post:
       summary: Creates a new Alumni
@@ -161,9 +209,9 @@ paths:
         passthroughBehavior: when_no_match
         type: aws_proxy
     options:
-      summary: Update an Alumni by ID Options
-      description: Update an Alumni by ID Options
-      operationId: updateAlumniOptions
+      summary: Alumni Preflight Options
+      description: Alumni Preflight Options
+      operationId: alumniPreflightOptions
       tags:
         - Alumni
       parameters:
