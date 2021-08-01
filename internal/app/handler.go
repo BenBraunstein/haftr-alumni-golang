@@ -216,6 +216,9 @@ func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 
 func UpdateAlumniOptionsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		w.WriteHeader(http.StatusOK)
 	}
 }
