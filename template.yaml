@@ -32,6 +32,10 @@ Resources:
     Properties:
       StageName: !Sub ${Stage}
       EndpointConfiguration: Edge
+      Cors:
+        AllowOrigin: "'*'"
+        AllowMethods: "'GET, POST, PATCH, OPTIONS'"
+        AllowHeaders: "'Content-Type, Authorization'"
       DefinitionBody:
         "Fn::Transform":
           Name: AWS::Include
