@@ -193,7 +193,25 @@ func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alum
 		Siblings:              toDTOSiblings(a.Siblings),
 		Children:              toDTOChildren(a.Children),
 		Comment:               a.Comment,
+		IsPublic:              a.IsPublic,
 		ProfilePictureURL:     url,
+	}
+}
+
+func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.CleanAlumni {
+	url, err := presignURL(a.ProfilePictureKey)
+	if err != nil {
+		url = ""
+	}
+
+	return pkg.CleanAlumni{
+		ID:                 a.ID,
+		Firstname:          a.Firstname,
+		Lastname:           a.Lastname,
+		HighSchoolGradYear: a.HighSchool.YearEnded,
+		CellPhone:          a.CellPhone,
+		EmailAddress:       a.EmailAddress,
+		ProfilePictureURL:  url,
 	}
 }
 

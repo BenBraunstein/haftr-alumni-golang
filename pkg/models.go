@@ -152,7 +152,18 @@ type Alumni struct {
 	Siblings              []Sibling `json:"siblings"`
 	Children              []Child   `json:"children"`
 	Comment               string    `json:"comment"`
+	IsPublic              bool      `json:"isPublic"`
 	ProfilePictureURL     string    `json:"profilePictureURL"`
+}
+
+type CleanAlumni struct {
+	ID                 uuid.V4 `json:"id"`
+	Firstname          string  `json:"firstname"`
+	Lastname           string  `json:"lastname"`
+	HighSchoolGradYear string  `json:"highSchoolGradYear"`
+	CellPhone          string  `json:"cellPhone"`
+	EmailAddress       string  `json:"emailAddress"`
+	ProfilePictureURL  string  `json:"profilePictureURL"`
 }
 
 type FileData struct {
@@ -162,8 +173,10 @@ type FileData struct {
 }
 
 type QueryParams struct {
-	Limit int64 `json:"limit"`
-	Page  int64 `json:"page"`
+	Limit     int64  `json:"limit"`
+	Page      int64  `json:"page"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
 }
 
 type School struct {

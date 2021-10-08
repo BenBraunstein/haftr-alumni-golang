@@ -22,5 +22,8 @@ type UpdateAlumniFunc func(req pkg.UpdateAlumniRequest, alumniId string, fileDat
 // RetrieveAlumniByIDFunc returns functionality to retrieve an alumni by ID
 type RetrieveAlumniByIDFunc func(alumniId string, tokenString string) (pkg.Alumni, error)
 
+// ChangeAlumniPrivacyFunc returns functionality to change the privacy status of an alumni by their ID
+type ChangeAlumniPrivacyFunc func(alumniId string, tokenString string) (pkg.Alumni, error)
+
 // RetrieveAlumniFunc returns functionality to retrieve all alumni
-type RetrieveAlumniFunc func(params pkg.QueryParams, tokenString string) ([]pkg.Alumni, error)
+type RetrieveAlumniFunc func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, error)

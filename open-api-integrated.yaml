@@ -12,8 +12,8 @@ x-amazon-apigateway-policy:
       Resource:
         - execute-api:/*
 x-amazon-apigateway-binary-media-types:
-  - "image/jpeg"
-  - "image/png"
+  - "image/*"
+  - "multipart/form-data"
 
 paths:
   /users:

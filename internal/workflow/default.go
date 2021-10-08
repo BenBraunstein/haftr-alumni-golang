@@ -227,37 +227,69 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 	}
 }
 
-func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
+func ChangeAlumniPrivacy(retrieveByID db.RetrieveAlumniByIDFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	changePrivacyStatus db.ChangeAlumniPrivacyFunc,
 	provideTime time.EpochProviderFunc,
-	presignURL storage.GetImageURLFunc) RetrieveAlumniFunc {
-	return func(params pkg.QueryParams, tokenString string) ([]pkg.Alumni, error) {
-		log.Printf("Retrieving all alumni")
+	presignURL storage.GetImageURLFunc,
+	isPublic bool) ChangeAlumniPrivacyFunc {
+	return func(alumniId, tokenString string) (pkg.Alumni, error) {
+		log.Printf("Updating privacy status of alumni with id=%v", alumniId)
 
 		id, _, err := token.CheckUserToken(tokenString, provideTime)
 		if err != nil {
-			return []pkg.Alumni{}, errors.Wrap(err, "workflow - unable to decode token")
+			return pkg.Alumni{}, errors.Wrap(err, "workflow - unable to decode token")
 		}
 
 		user, err := retrieveUserById(id.Val())
 		if err != nil {
-			return []pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
 		}
 
-		if !user.Admin {
-			return []pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access", user.ID)
+		if user.AlumniID.Val() != alumniId && !user.Admin {
+			return pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access to alumniId=%v", user.ID, alumniId)
 		}
 
-		aa, err := retrieveAlumnis(params)
+		if err := changePrivacyStatus(alumniId, isPublic); err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to update alumniId=%v", alumniId)
+		}
+
+		a, err := retrieveByID(alumniId)
 		if err != nil {
-			return []pkg.Alumni{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
 
-		var aaDTO []pkg.Alumni
+		return mapping.ToDTOAlumni(a, presignURL), nil
+	}
+}
+
+func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
+	retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	presignURL storage.GetImageURLFunc) RetrieveAlumniFunc {
+	return func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, error) {
+		log.Printf("Retrieving all alumni")
+
+		id, _, err := token.CheckUserToken(tokenString, provideTime)
+		if err != nil {
+			return []pkg.CleanAlumni{}, errors.Wrap(err, "workflow - unable to decode token")
+		}
+
+		user, err := retrieveUserById(id.Val())
+		if err != nil {
+			return []pkg.CleanAlumni{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
+		}
+
+		aa, err := retrieveAlumnis(params, user.Admin)
+		if err != nil {
+			return []pkg.CleanAlumni{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
+		}
+
+		cleanAlumni := []pkg.CleanAlumni{}
 		for _, a := range aa {
-			aaDTO = append(aaDTO, mapping.ToDTOAlumni(a, presignURL))
+			cleanAlumni = append(cleanAlumni, mapping.ToCleanAlumni(a, presignURL))
 		}
 
-		return aaDTO, nil
+		return cleanAlumni, nil
 	}
 }

@@ -22,6 +22,8 @@ type App struct {
 	RetrieveAlumniByIDHandler http.HandlerFunc
 	RetrieveAllAlumniHandler  http.HandlerFunc
 	UpdateAlumniHandler       http.HandlerFunc
+	MakeAlumniPublicHandler   http.HandlerFunc
+	MakeAlumniPrivateHandler  http.HandlerFunc
 	CorsHandler               http.HandlerFunc
 }
 
@@ -36,6 +38,8 @@ func (a *App) Handler() http.HandlerFunc {
 	router.HandlerFunc(http.MethodOptions, "/autologin", a.CorsHandler)
 	router.HandlerFunc(http.MethodPost, "/alumni", a.AddAlumniHandler)
 	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.UpdateAlumniHandler)
+	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v/gopublic", alumniIdKey), a.MakeAlumniPublicHandler)
+	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v/goprivate", alumniIdKey), a.MakeAlumniPrivateHandler)
 	router.HandlerFunc(http.MethodOptions, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.CorsHandler)
 	router.HandlerFunc(http.MethodGet, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.RetrieveAlumniByIDHandler)
 	router.HandlerFunc(http.MethodGet, "/alumni", a.RetrieveAllAlumniHandler)
@@ -45,19 +49,20 @@ func (a *App) Handler() http.HandlerFunc {
 
 // OptionalArgs is a representation of all the optional arguments for this application
 type OptionalArgs struct {
-	EpochTimeProvider   time.EpochProviderFunc
-	UUIDGenerator       uuid.GenV4Func
-	PhotosS3Bucket      string
-	AddUser             db.InsertUserFunc
-	RetrieveUserByEmail db.RetrieveUserByEmailFunc
-	RetrieveUserByID    db.RetrieveUserByIDFunc
-	ReplaceUser         db.ReplaceUserFunc
-	InsertAlumni        db.InsertAlumniFunc
-	RetrieveAlumniByID  db.RetrieveAlumniByIDFunc
-	RetrieveAlumnis     db.RetrieveAllAlumniFunc
-	UpdateAlumni        db.UpdateAlumniFunc
-	S3Upload            storage.UploadFunc
-	S3Presign           storage.PresignFunc
+	EpochTimeProvider         time.EpochProviderFunc
+	UUIDGenerator             uuid.GenV4Func
+	PhotosS3Bucket            string
+	AddUser                   db.InsertUserFunc
+	RetrieveUserByEmail       db.RetrieveUserByEmailFunc
+	RetrieveUserByID          db.RetrieveUserByIDFunc
+	ReplaceUser               db.ReplaceUserFunc
+	InsertAlumni              db.InsertAlumniFunc
+	RetrieveAlumniByID        db.RetrieveAlumniByIDFunc
+	RetrieveAlumnis           db.RetrieveAllAlumniFunc
+	UpdateAlumni              db.UpdateAlumniFunc
+	ChangeAlumniPrivacyStatus db.ChangeAlumniPrivacyFunc
+	S3Upload                  storage.UploadFunc
+	S3Presign                 storage.PresignFunc
 }
 
 // Option is a representation of a function that modifies optional arguments
@@ -68,19 +73,20 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	s3Config := storage.DefaultConfig()
 
 	oa := OptionalArgs{
-		EpochTimeProvider:   time.CurrentEpoch,
-		UUIDGenerator:       uuid.GenV4,
-		PhotosS3Bucket:      os.Getenv("S3_BUCKET"),
-		AddUser:             db.InsertUser(provideDb),
-		RetrieveUserByEmail: db.RetrieveUserByEmail(provideDb),
-		RetrieveUserByID:    db.RetrieveUserByID(provideDb),
-		ReplaceUser:         db.ReplaceUser(provideDb),
-		InsertAlumni:        db.InsertAlumni(provideDb),
-		RetrieveAlumniByID:  db.RetrieveAlumniByID(provideDb),
-		RetrieveAlumnis:     db.RetrieveAllAlumni(provideDb),
-		UpdateAlumni:        db.UpdateAlumni(provideDb),
-		S3Upload:            storage.UploadToS3(s3Config),
-		S3Presign:           storage.PresignObject(s3Config),
+		EpochTimeProvider:         time.CurrentEpoch,
+		UUIDGenerator:             uuid.GenV4,
+		PhotosS3Bucket:            os.Getenv("S3_BUCKET"),
+		AddUser:                   db.InsertUser(provideDb),
+		RetrieveUserByEmail:       db.RetrieveUserByEmail(provideDb),
+		RetrieveUserByID:          db.RetrieveUserByID(provideDb),
+		ReplaceUser:               db.ReplaceUser(provideDb),
+		InsertAlumni:              db.InsertAlumni(provideDb),
+		RetrieveAlumniByID:        db.RetrieveAlumniByID(provideDb),
+		RetrieveAlumnis:           db.RetrieveAllAlumni(provideDb),
+		UpdateAlumni:              db.UpdateAlumni(provideDb),
+		ChangeAlumniPrivacyStatus: db.ChangeAlumniPrivacy(provideDb),
+		S3Upload:                  storage.UploadToS3(s3Config),
+		S3Presign:                 storage.PresignObject(s3Config),
 	}
 
 	for _, opt := range opts {
@@ -98,6 +104,8 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	corsHandler := CorsHandler()
 	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
 	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
+	makeAlumniPublicHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, true)
+	makeAlumniPrivateHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, false)
 
 	return App{
 		AddUserHandler:            addUserHandler,
@@ -107,6 +115,8 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 		RetrieveAlumniByIDHandler: retrieveAlumniByIdHandler,
 		RetrieveAllAlumniHandler:  retrieveAllAlumniHandler,
 		UpdateAlumniHandler:       updateAlumniHandler,
+		MakeAlumniPublicHandler:   makeAlumniPublicHandler,
+		MakeAlumniPrivateHandler:  makeAlumniPrivateHandler,
 		CorsHandler:               corsHandler,
 	}
 }

@@ -28,6 +28,8 @@ const (
 	alumniIdKey       = "alumniId"
 	limitKey          = "limit"
 	pageKey           = "page"
+	firstnameKey      = "firstname"
+	lastnameKey       = "lastname"
 )
 
 var (
@@ -182,7 +184,6 @@ func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 		}
 
 		f, fh, fileErr := r.FormFile(profilePictureKey)
-
 		var buf bytes.Buffer
 		var tee io.Reader
 		var fileData pkg.FileData
@@ -272,6 +273,32 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	}
 }
 
+func ChangeAlumniPrivacyHandler(retrieveByID db.RetrieveAlumniByIDFunc,
+	retrieveUserById db.RetrieveUserByIDFunc,
+	changePrivacyStatus db.ChangeAlumniPrivacyFunc,
+	provideTime time.EpochProviderFunc,
+	presignURL storage.GetImageURLFunc,
+	isPublic bool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := getAuthToken(r)
+
+		alumId, err := retrieveResourceID(alumniIdKey, r)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		changeStatus := workflow.ChangeAlumniPrivacy(retrieveByID, retrieveUserById, changePrivacyStatus, provideTime, presignURL, isPublic)
+		a, err := changeStatus(alumId, token)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		ServeJSON(a, w)
+	}
+}
+
 // JSONToDTO decodes an http request JSON body to a data transfer object
 func JSONToDTO(DTO interface{}, w http.ResponseWriter, r *http.Request) error {
 	decoder := json.NewDecoder(r.Body)
@@ -338,8 +365,10 @@ func getQueryParams(r *http.Request) (pkg.QueryParams, error) {
 	}
 
 	params := pkg.QueryParams{
-		Limit: int64(lim),
-		Page:  int64(page),
+		Limit:     int64(lim),
+		Page:      int64(page),
+		Firstname: r.URL.Query().Get(firstnameKey),
+		Lastname:  r.URL.Query().Get(lastnameKey),
 	}
 
 	if params.Limit == 0 {

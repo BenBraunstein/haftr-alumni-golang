@@ -2,12 +2,14 @@ package db
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/internal"
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -98,10 +100,37 @@ func RetrieveAlumniByID(provideMongo *mongo.Database) RetrieveAlumniByIDFunc {
 	}
 }
 
-func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
-	return func(params pkg.QueryParams) ([]internal.Alumni, error) {
+func ChangeAlumniPrivacy(provideMongo *mongo.Database) ChangeAlumniPrivacyFunc {
+	return func(id string, isPublic bool) error {
 		col := provideMongo.Collection(alumnisCollectionName)
-		filter := bson.M{}
+		filter := bson.M{"id": id}
+
+		update := bson.D{
+			{"$set", bson.D{{
+				"isPublic", isPublic,
+			}}},
+		}
+
+		_, err := col.UpdateOne(context.Background(), filter, update)
+		if err != nil {
+			return errors.Wrapf(err, "db - unable to update privacy status for alumniId=%v", id)
+		}
+
+		return nil
+	}
+}
+
+func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
+	return func(params pkg.QueryParams, isAdmin bool) ([]internal.Alumni, error) {
+		col := provideMongo.Collection(alumnisCollectionName)
+		filter := bson.M{
+			"firstname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
+			"lastname":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
+		}
+
+		if !isAdmin {
+			filter["isPublic"] = true
+		}
 
 		var skip int64
 		if params.Page > 0 {
@@ -125,7 +154,7 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		}
 
 		defer cur.Close(ctx)
-		var aa []internal.Alumni
+		aa := []internal.Alumni{}
 		for cur.Next(ctx) {
 			var a internal.Alumni
 			if err := cur.Decode(&a); err != nil {

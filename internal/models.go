@@ -62,6 +62,7 @@ type Alumni struct {
 	Siblings              []Sibling  `bson:"siblings"`
 	Children              []Child    `bson:"children"`
 	Comment               string     `bson:"comment"`
+	IsPublic              bool       `bson:"isPublic"`
 	ProfilePictureKey     string     `bson:"profilePictureKey"`
 	CreatedTimestamp      time.Epoch `bson:"createdTimestamp"`
 	LastUpdatedTimestamp  time.Epoch `bson:"lastUpdatedTimestamp"`
@@ -107,6 +108,7 @@ type UpdateAlumniRequest struct {
 	Siblings              []Sibling  `bson:"siblings,omitempty"`
 	Children              []Child    `bson:"children,omitempty"`
 	Comment               string     `bson:"comment,omitempty"`
+	IsPublic              bool       `bson:"isPublic,omitempty"`
 	ProfilePictureKey     string     `bson:"profilePictureKey"`
 	LastUpdatedTimestamp  time.Epoch `bson:"lastUpdatedTimestamp"`
 }

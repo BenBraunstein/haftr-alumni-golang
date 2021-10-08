@@ -28,4 +28,6 @@ type UpdateAlumniFunc func(id string, a internal.UpdateAlumniRequest) error
 
 type RetrieveAlumniByIDFunc func(id string) (internal.Alumni, error)
 
-type RetrieveAllAlumniFunc func(params pkg.QueryParams) ([]internal.Alumni, error)
+type ChangeAlumniPrivacyFunc func(id string, isPublic bool) error
+
+type RetrieveAllAlumniFunc func(params pkg.QueryParams, isAdmin bool) ([]internal.Alumni, error)
