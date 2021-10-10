@@ -7,6 +7,7 @@ import (
 
 const (
 	DefaultPageLimit = 20
+	EmailRecipient   = "benzbraunstein@gmail.com"
 )
 
 // User is the internal representation of a user
@@ -152,4 +153,10 @@ type Address struct {
 	State   string `bson:"state"`
 	Zip     string `bson:"zip"`
 	Country string `bson:"country"`
+}
+
+type EmailTemplate struct {
+	Name    string `bson:"name"`
+	Subject string `bson:"subject"`
+	HTML    string `bson:"html"`
 }

@@ -60,6 +60,7 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref AlumniPhotosBucket
+        - SESCrudPolicy: {}
       Events:
         CreateUser:
           Type: Api

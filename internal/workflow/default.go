@@ -5,11 +5,14 @@ import (
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
+	"github.com/BenBraunstein/haftr-alumni-golang/internal"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/db"
+	"github.com/BenBraunstein/haftr-alumni-golang/internal/email"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/mapping"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/storage"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/token"
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
+	"github.com/aymerick/raymond"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -96,10 +99,12 @@ func AutoLoginUser(retrieveUserById db.RetrieveUserByIDFunc, provideTime time.Ep
 func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 	insertAlumni db.InsertAlumniFunc,
 	replaceUser db.ReplaceUserFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	provideTime time.EpochProviderFunc,
 	genUUID uuid.GenV4Func,
 	uploadToS3 storage.UploadImageFunc,
-	presignURL storage.GetImageURLFunc) AddAlumniFunc {
+	presignURL storage.GetImageURLFunc,
+	sendEmail email.SendEmailFunc) AddAlumniFunc {
 	return func(req pkg.AlumniRequest, fileData pkg.FileData, tokenString string, skipFileUpload bool) (pkg.Alumni, error) {
 		log.Printf("Adding alumni with details=%+v", req)
 
@@ -140,6 +145,43 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 		user.AlumniID = a.ID
 		if err := replaceUser(user); err != nil {
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to replace userId=%v", user.ID)
+		}
+
+		// Send email
+		et, err := getEmailTemplate("NEW_ALUMNI")
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve email template")
+		}
+
+		bodyTpl, err := raymond.Parse(et.HTML)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email body template")
+		}
+
+		subjectTpl, err := raymond.Parse(et.Subject)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email subject template")
+		}
+
+		emailBody, err := bodyTpl.Exec(a)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email body template")
+		}
+
+		emailSubject, err := subjectTpl.Exec(a)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email subject template")
+		}
+
+		er := email.SendRequest{
+			Subject:     emailSubject,
+			HTMLContent: emailBody,
+			Recipient:   internal.EmailRecipient,
+			Sender:      internal.EmailRecipient,
+		}
+
+		if err := sendEmail(er); err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
 		}
 
 		return mapping.ToDTOAlumni(a, presignURL), nil

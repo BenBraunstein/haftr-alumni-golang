@@ -13,6 +13,7 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/db"
+	"github.com/BenBraunstein/haftr-alumni-golang/internal/email"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/storage"
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/workflow"
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
@@ -109,10 +110,12 @@ func AutoLoginUserHandler(retrieveUserById db.RetrieveUserByIDFunc, provideTime 
 func AddAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 	insertAlumni db.InsertAlumniFunc,
 	replaceUser db.ReplaceUserFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	provideTime time.EpochProviderFunc,
 	genUUID uuid.GenV4Func,
 	uploadToS3 storage.UploadImageFunc,
-	presignURL storage.GetImageURLFunc) http.HandlerFunc {
+	presignURL storage.GetImageURLFunc,
+	sendEmail email.SendEmailFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseMultipartForm(32 << 20); err != nil {
 			ServeInternalError(err, w)
@@ -147,7 +150,7 @@ func AddAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 
 		token := getAuthToken(r)
 
-		addAlum := workflow.AddAlumni(retrieveUserById, insertAlumni, replaceUser, provideTime, genUUID, uploadToS3, presignURL)
+		addAlum := workflow.AddAlumni(retrieveUserById, insertAlumni, replaceUser, getEmailTemplate, provideTime, genUUID, uploadToS3, presignURL, sendEmail)
 		alumni, err := addAlum(req, fileData, token, fileErr != nil)
 		if err != nil {
 			ServeInternalError(err, w)

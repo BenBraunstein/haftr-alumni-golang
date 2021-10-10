@@ -166,3 +166,17 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		return aa, cur.Err()
 	}
 }
+
+func RetrieveEmailTemplateByName(provideMongo *mongo.Database) RetrieveEmailTemplateByNameFunc {
+	return func(name string) (internal.EmailTemplate, error) {
+		col := provideMongo.Collection(emailTemplatesCollectionName)
+		filter := bson.M{"name": name}
+
+		var et internal.EmailTemplate
+		if err := col.FindOne(context.Background(), filter).Decode(&et); err != nil {
+			return internal.EmailTemplate{}, errors.Wrapf(err, "db - unable to find email template with name=%v", name)
+		}
+
+		return et, nil
+	}
+}
