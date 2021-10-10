@@ -60,7 +60,8 @@ Resources:
         - VPCAccessPolicy: {}
         - S3CrudPolicy:
             BucketName: !Ref AlumniPhotosBucket
-        - SESCrudPolicy: {}
+        - SESCrudPolicy: 
+            IdentityName: benzbraunstein@gmail.com
       Events:
         CreateUser:
           Type: Api
