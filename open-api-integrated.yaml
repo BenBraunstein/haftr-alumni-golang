@@ -225,6 +225,81 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+  /alumni/{AlumniID}/gopublic:
+    patch:
+      summary: Make alumni public
+      description: Make alumni public
+      operationId: makeAlumniPublic
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Make alumni public preflight options
+      description: Make alumni public preflight options
+      operationId: makeAlumniPublicOptions
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+  /alumni/{AlumniID}/goprivate:
+    patch:
+      summary: Make alumni private
+      description: Make alumni private
+      operationId: makeAlumniPrivate
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Make alumni private preflight options
+      description: Make alumni private preflight options
+      operationId: makeAlumniPrivateOptions
+      tags:
+        - Alumni
+      parameters:
+        - $ref: "#/components/parameters/AlumniID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
   
 components:
   schemas:

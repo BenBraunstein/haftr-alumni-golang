@@ -129,6 +129,30 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /alumni
             Method: get
+        AlumniPublic:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}/gopublic
+            Method: patch
+        AlumniPublicOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}/gopublic
+            Method: options
+        AlumniPrivate:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}/goprivate
+            Method: patch
+        AlumniPrivateOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /alumni/{alumniId}/goprivate
+            Method: options
 
 Outputs:
   Endpoint:
