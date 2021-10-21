@@ -6,8 +6,10 @@ import (
 )
 
 const (
-	DefaultPageLimit = 20
-	EmailRecipient   = "benzbraunstein@gmail.com"
+	DefaultPageLimit          = 20
+	EmailRecipient            = "benzbraunstein@gmail.com"
+	NewAlumniTemplateName     = "NEW_ALUMNI"
+	UpdatedAlumniTemplateName = "UPDATED_ALUMNI"
 )
 
 // User is the internal representation of a user
