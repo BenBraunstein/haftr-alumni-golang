@@ -121,7 +121,7 @@ func ChangeAlumniPrivacy(provideMongo *mongo.Database) ChangeAlumniPrivacyFunc {
 }
 
 func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
-	return func(params pkg.QueryParams, isAdmin bool) ([]internal.Alumni, error) {
+	return func(params pkg.QueryParams, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error) {
 		col := provideMongo.Collection(alumnisCollectionName)
 		filter := bson.M{
 			"firstname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
@@ -150,7 +150,7 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		ctx := context.Background()
 		cur, err := col.Find(ctx, filter, &opts)
 		if err != nil {
-			return []internal.Alumni{}, errors.Wrap(err, "db - unable to find any alumnis")
+			return []internal.Alumni{}, pkg.PageInfo{}, errors.Wrap(err, "db - unable to find any alumnis")
 		}
 
 		defer cur.Close(ctx)
@@ -158,13 +158,44 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		for cur.Next(ctx) {
 			var a internal.Alumni
 			if err := cur.Decode(&a); err != nil {
-				return []internal.Alumni{}, errors.Wrap(err, "db - error decoding alumni")
+				return []internal.Alumni{}, pkg.PageInfo{}, errors.Wrap(err, "db - error decoding alumni")
 			}
 			aa = append(aa, a)
 		}
 
-		return aa, cur.Err()
+		pi, err := pageInfo(col, filter, params.Page, params.Limit)
+		if err != nil {
+			return []internal.Alumni{}, pkg.PageInfo{}, errors.Wrapf(err, "db - unable to calculate page info")
+		}
+
+		return aa, pi, cur.Err()
 	}
+}
+
+func pageInfo(col *mongo.Collection, filter interface{}, page int64, limit int64) (pkg.PageInfo, error) {
+	count, err := col.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return pkg.PageInfo{}, err
+	}
+
+	if page == 0 {
+		page = 1
+	}
+	if limit == 0 {
+		limit = internal.DefaultPageLimit
+	}
+
+	pages := int64(count / limit)
+	if count%limit != 0 {
+		pages++
+	}
+
+	pi := pkg.PageInfo{
+		CurrentPage: page,
+		LastPage:    pages,
+	}
+
+	return pi, nil
 }
 
 func RetrieveEmailTemplateByName(provideMongo *mongo.Database) RetrieveEmailTemplateByNameFunc {

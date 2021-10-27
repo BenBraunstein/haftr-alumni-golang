@@ -166,6 +166,11 @@ type CleanAlumni struct {
 	ProfilePictureURL  string  `json:"profilePictureURL"`
 }
 
+type RetrieveCleanAlumniResponse struct {
+	Alumni   []CleanAlumni `json:"alumni"`
+	PageInfo PageInfo      `json:"pageInfo"`
+}
+
 type FileData struct {
 	Content     io.Reader
 	Header      *multipart.FileHeader
@@ -218,4 +223,10 @@ type Address struct {
 	State   string `json:"state"`
 	Zip     string `json:"zip"`
 	Country string `json:"country"`
+}
+
+// PageInfo returns page info for a result
+type PageInfo struct {
+	CurrentPage int64 `json:"currentPage"`
+	LastPage    int64 `json:"lastPage"`
 }

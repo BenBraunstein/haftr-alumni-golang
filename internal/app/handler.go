@@ -266,13 +266,18 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 		}
 
 		retrieveAlumnis := workflow.RetrieveAlumni(retrieveAlumnis, retrieveUserById, provideTime, presignURL)
-		aa, err := retrieveAlumnis(params, token)
+		aa, pi, err := retrieveAlumnis(params, token)
 		if err != nil {
 			ServeInternalError(err, w)
 			return
 		}
 
-		ServeJSON(aa, w)
+		res := pkg.RetrieveCleanAlumniResponse{
+			Alumni:   aa,
+			PageInfo: pi,
+		}
+
+		ServeJSON(res, w)
 	}
 }
 

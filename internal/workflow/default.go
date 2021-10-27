@@ -148,7 +148,7 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 		}
 
 		// Send email
-		et, err := getEmailTemplate("NEW_ALUMNI")
+		et, err := getEmailTemplate(internal.NewAlumniTemplateName)
 		if err != nil {
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve email template")
 		}
@@ -191,10 +191,13 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 	updateAlumni db.UpdateAlumniFunc,
 	retrieveAlumniById db.RetrieveAlumniByIDFunc,
+	// getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	provideTime time.EpochProviderFunc,
 	genUUID uuid.GenV4Func,
 	uploadToS3 storage.UploadImageFunc,
-	presignURL storage.GetImageURLFunc) UpdateAlumniFunc {
+	presignURL storage.GetImageURLFunc,
+	// sendEmail email.SendEmailFunc,
+) UpdateAlumniFunc {
 	return func(req pkg.UpdateAlumniRequest, alumniId string, fileData pkg.FileData, tokenString string, skipFileUpload bool) (pkg.Alumni, error) {
 		log.Printf("Updating alumniId=%v", alumniId)
 
@@ -234,6 +237,43 @@ func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 		if err != nil {
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
+
+		// // Send email
+		// et, err := getEmailTemplate(internal.UpdatedAlumniTemplateName)
+		// if err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve email template")
+		// }
+
+		// bodyTpl, err := raymond.Parse(et.HTML)
+		// if err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email body template")
+		// }
+
+		// subjectTpl, err := raymond.Parse(et.Subject)
+		// if err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email subject template")
+		// }
+
+		// emailBody, err := bodyTpl.Exec(a)
+		// if err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email body template")
+		// }
+
+		// emailSubject, err := subjectTpl.Exec(a)
+		// if err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email subject template")
+		// }
+
+		// er := email.SendRequest{
+		// 	Subject:     emailSubject,
+		// 	HTMLContent: emailBody,
+		// 	Recipient:   internal.EmailRecipient,
+		// 	Sender:      internal.EmailRecipient,
+		// }
+
+		// if err := sendEmail(er); err != nil {
+		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
+		// }
 
 		return mapping.ToDTOAlumni(alum, presignURL), nil
 	}
@@ -309,22 +349,22 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) RetrieveAlumniFunc {
-	return func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, error) {
+	return func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, pkg.PageInfo, error) {
 		log.Printf("Retrieving all alumni")
 
 		id, _, err := token.CheckUserToken(tokenString, provideTime)
 		if err != nil {
-			return []pkg.CleanAlumni{}, errors.Wrap(err, "workflow - unable to decode token")
+			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrap(err, "workflow - unable to decode token")
 		}
 
 		user, err := retrieveUserById(id.Val())
 		if err != nil {
-			return []pkg.CleanAlumni{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
+			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
 		}
 
-		aa, err := retrieveAlumnis(params, user.Admin)
+		aa, pi, err := retrieveAlumnis(params, user.Admin)
 		if err != nil {
-			return []pkg.CleanAlumni{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
+			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
 		}
 
 		cleanAlumni := []pkg.CleanAlumni{}
@@ -332,6 +372,6 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			cleanAlumni = append(cleanAlumni, mapping.ToCleanAlumni(a, presignURL))
 		}
 
-		return cleanAlumni, nil
+		return cleanAlumni, pi, nil
 	}
 }
