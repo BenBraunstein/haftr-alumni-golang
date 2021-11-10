@@ -121,11 +121,12 @@ func ChangeAlumniPrivacy(provideMongo *mongo.Database) ChangeAlumniPrivacyFunc {
 }
 
 func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
-	return func(params pkg.QueryParams, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error) {
+	return func(params pkg.QueryParams, alumniId string, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error) {
 		col := provideMongo.Collection(alumnisCollectionName)
 		filter := bson.M{
 			"firstname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
 			"lastname":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
+			"id":        bson.M{"$ne": alumniId},
 		}
 
 		if !isAdmin {

@@ -375,7 +375,7 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
 		}
 
-		aa, pi, err := retrieveAlumnis(params, user.Admin)
+		aa, pi, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin)
 		if err != nil {
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
 		}
