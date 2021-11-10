@@ -164,10 +164,12 @@ func AddAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 	updateAlumni db.UpdateAlumniFunc,
 	retrieveAlumniById db.RetrieveAlumniByIDFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	provideTime time.EpochProviderFunc,
 	genUUID uuid.GenV4Func,
 	uploadToS3 storage.UploadImageFunc,
-	presignURL storage.GetImageURLFunc) http.HandlerFunc {
+	presignURL storage.GetImageURLFunc,
+	sendEmail email.SendEmailFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseMultipartForm(32 << 20); err != nil {
 			ServeInternalError(err, w)
@@ -207,7 +209,7 @@ func UpdateAlumniHandler(retrieveUserById db.RetrieveUserByIDFunc,
 
 		token := getAuthToken(r)
 
-		updateAlum := workflow.UpdateAlumni(retrieveUserById, updateAlumni, retrieveAlumniById, provideTime, genUUID, uploadToS3, presignURL)
+		updateAlum := workflow.UpdateAlumni(retrieveUserById, updateAlumni, retrieveAlumniById, getEmailTemplate, provideTime, genUUID, uploadToS3, presignURL, sendEmail)
 		alumni, err := updateAlum(req, alumId, fileData, token, fileErr != nil)
 		if err != nil {
 			ServeInternalError(err, w)

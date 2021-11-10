@@ -7,6 +7,8 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
 )
 
+type AlumniInterface interface{}
+
 // UserRequest is a representation of a request to make a new user
 type UserRequest struct {
 	Email    string `json:"email"`

@@ -108,7 +108,7 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	loginUserHandler := LoginUserHandler(oa.RetrieveUserByEmail, oa.EpochTimeProvider)
 	autologinUserHandler := AutoLoginUserHandler(oa.RetrieveUserByID, oa.EpochTimeProvider)
 	addAlumniHandler := AddAlumniHandler(oa.RetrieveUserByID, oa.InsertAlumni, oa.ReplaceUser, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
-	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL)
+	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
 	corsHandler := CorsHandler()
 	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
 	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)

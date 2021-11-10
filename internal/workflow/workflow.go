@@ -20,7 +20,7 @@ type AddAlumniFunc func(req pkg.AlumniRequest, fileData pkg.FileData, tokenStrin
 type UpdateAlumniFunc func(req pkg.UpdateAlumniRequest, alumniId string, fileData pkg.FileData, tokenString string, skipFileUpload bool) (pkg.Alumni, error)
 
 // RetrieveAlumniByIDFunc returns functionality to retrieve an alumni by ID
-type RetrieveAlumniByIDFunc func(alumniId string, tokenString string) (pkg.Alumni, error)
+type RetrieveAlumniByIDFunc func(alumniId string, tokenString string) (pkg.AlumniInterface, error)
 
 // ChangeAlumniPrivacyFunc returns functionality to change the privacy status of an alumni by their ID
 type ChangeAlumniPrivacyFunc func(alumniId string, tokenString string) (pkg.Alumni, error)

@@ -1,6 +1,7 @@
 package workflow
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
@@ -191,12 +192,12 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 	updateAlumni db.UpdateAlumniFunc,
 	retrieveAlumniById db.RetrieveAlumniByIDFunc,
-	// getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	provideTime time.EpochProviderFunc,
 	genUUID uuid.GenV4Func,
 	uploadToS3 storage.UploadImageFunc,
 	presignURL storage.GetImageURLFunc,
-	// sendEmail email.SendEmailFunc,
+	sendEmail email.SendEmailFunc,
 ) UpdateAlumniFunc {
 	return func(req pkg.UpdateAlumniRequest, alumniId string, fileData pkg.FileData, tokenString string, skipFileUpload bool) (pkg.Alumni, error) {
 		log.Printf("Updating alumniId=%v", alumniId)
@@ -238,42 +239,48 @@ func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
 
-		// // Send email
-		// et, err := getEmailTemplate(internal.UpdatedAlumniTemplateName)
-		// if err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve email template")
-		// }
+		// Send email
+		et, err := getEmailTemplate(internal.UpdatedAlumniTemplateName)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve email template")
+		}
 
-		// bodyTpl, err := raymond.Parse(et.HTML)
-		// if err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email body template")
-		// }
+		bodyTpl, err := raymond.Parse(et.HTML)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email body template")
+		}
 
-		// subjectTpl, err := raymond.Parse(et.Subject)
-		// if err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email subject template")
-		// }
+		subjectTpl, err := raymond.Parse(et.Subject)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to parse email subject template")
+		}
 
-		// emailBody, err := bodyTpl.Exec(a)
-		// if err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email body template")
-		// }
+		emailBody, err := bodyTpl.Exec(a)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email body template")
+		}
 
-		// emailSubject, err := subjectTpl.Exec(a)
-		// if err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email subject template")
-		// }
+		bb, err := json.MarshalIndent(updates, "", "\t")
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to marshal updates")
+		}
+		emailBody = emailBody + "\n\n" + string(bb)
 
-		// er := email.SendRequest{
-		// 	Subject:     emailSubject,
-		// 	HTMLContent: emailBody,
-		// 	Recipient:   internal.EmailRecipient,
-		// 	Sender:      internal.EmailRecipient,
-		// }
+		emailSubject, err := subjectTpl.Exec(a)
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to exec email subject template")
+		}
 
-		// if err := sendEmail(er); err != nil {
-		// 	return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
-		// }
+		er := email.SendRequest{
+			Subject:     emailSubject,
+			HTMLContent: emailBody,
+			Recipient:   internal.EmailRecipient,
+			Sender:      internal.EmailRecipient,
+		}
+
+		if err := sendEmail(er); err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
+		}
 
 		return mapping.ToDTOAlumni(alum, presignURL), nil
 	}
@@ -283,7 +290,7 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) RetrieveAlumniByIDFunc {
-	return func(alumniId string, tokenString string) (pkg.Alumni, error) {
+	return func(alumniId string, tokenString string) (pkg.AlumniInterface, error) {
 		log.Printf("Retrieving alumni with id=%v", alumniId)
 
 		id, _, err := token.CheckUserToken(tokenString, provideTime)
@@ -296,13 +303,19 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
 		}
 
-		if user.AlumniID.Val() != alumniId && !user.Admin {
-			return pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access to alumniId=%v", user.ID, alumniId)
-		}
-
 		a, err := retrieveByID(alumniId)
 		if err != nil {
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
+		}
+
+		if user.AlumniID.Val() != alumniId && !user.Admin && !a.IsPublic {
+			return pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access to alumniId=%v", user.ID, alumniId)
+		}
+
+		// If a user tried to access another user who is public
+		if user.AlumniID.Val() != alumniId && !user.Admin && a.IsPublic {
+			ca := mapping.ToCleanAlumni(a, presignURL)
+			return ca, nil
 		}
 
 		return mapping.ToDTOAlumni(a, presignURL), nil
