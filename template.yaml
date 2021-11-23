@@ -129,6 +129,12 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /alumni
             Method: get
+        HappyBirthday:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /happybirthday
+            Method: get
         AlumniPublic:
           Type: Api
           Properties:

@@ -126,6 +126,7 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		filter := bson.M{
 			"firstname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
 			"lastname":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
+			"birthday":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Birthday)}},
 			"id":        bson.M{"$ne": alumniId},
 		}
 

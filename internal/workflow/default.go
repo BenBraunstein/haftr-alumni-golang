@@ -2,7 +2,9 @@ package workflow
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
@@ -386,5 +388,31 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 		}
 
 		return cleanAlumni, pi, nil
+	}
+}
+
+func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.EpochProviderFunc) HappyBirthdayFunc {
+	return func() ([]pkg.HappyBirthdayAlumni, error) {
+		ds := provideTime().ToISO8601().DateString()
+		m := strings.Split(ds, "-")[1]
+		d := strings.Split(ds, "-")[2]
+
+		bday := fmt.Sprintf("%v-%v", m, d)
+
+		log.Printf("Retrieving Alumnis with Birthday=%v", bday)
+
+		qp := pkg.QueryParams{Limit: -1, Birthday: bday}
+
+		aa, _, err := retrieveAlumnis(qp, "", true)
+		if err != nil {
+			return []pkg.HappyBirthdayAlumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumnis")
+		}
+
+		hbdAA := []pkg.HappyBirthdayAlumni{}
+		for _, a := range aa {
+			hbdAA = append(hbdAA, mapping.ToHappyBirthdayAlumni(a))
+		}
+
+		return hbdAA, nil
 	}
 }

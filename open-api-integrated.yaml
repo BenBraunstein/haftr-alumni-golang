@@ -167,6 +167,24 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+  /happybirthday:
+    get:
+      summary: Retrieve Alumni Birthdays
+      description: Retrieve Alumni Birthdays
+      operationId: happyBirthday
+      tags:
+        - Alumni
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniPageResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /alumni/{AlumniID}:
     get:
       summary: Retrieve an Alumni by ID
@@ -299,8 +317,6 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
-
-  
 components:
   schemas:
     CreateLoginUserRequest:

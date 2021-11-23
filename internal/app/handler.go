@@ -283,6 +283,19 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	}
 }
 
+func HappyBirthdayHandler(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.EpochProviderFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		happyBirthday := workflow.HappyBirthday(retrieveAlumnis, provideTime)
+		aa, err := happyBirthday()
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		ServeJSON(aa, w)
+	}
+}
+
 func ChangeAlumniPrivacyHandler(retrieveByID db.RetrieveAlumniByIDFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	changePrivacyStatus db.ChangeAlumniPrivacyFunc,

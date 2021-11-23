@@ -119,6 +119,7 @@ type Alumni struct {
 	Firstname             string    `json:"firstname"`
 	Middlename            string    `json:"middlename"`
 	Lastname              string    `json:"lastname"`
+	HighSchoolGradYear    string    `json:"highSchoolGradYear"`
 	MarriedName           string    `json:"marriedName"`
 	MotherName            string    `json:"motherName"`
 	FatherName            string    `json:"fatherName"`
@@ -168,6 +169,12 @@ type CleanAlumni struct {
 	ProfilePictureURL  string  `json:"profilePictureURL"`
 }
 
+type HappyBirthdayAlumni struct {
+	Firstname          string `json:"firstname"`
+	Lastname           string `json:"lastname"`
+	HighSchoolGradYear string `json:"highSchoolGradYear"`
+}
+
 type RetrieveCleanAlumniResponse struct {
 	Alumni   []CleanAlumni `json:"alumni"`
 	PageInfo PageInfo      `json:"pageInfo"`
@@ -184,6 +191,7 @@ type QueryParams struct {
 	Page      int64  `json:"page"`
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
+	Birthday  string
 }
 
 type School struct {

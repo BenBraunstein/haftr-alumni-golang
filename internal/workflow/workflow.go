@@ -27,3 +27,6 @@ type ChangeAlumniPrivacyFunc func(alumniId string, tokenString string) (pkg.Alum
 
 // RetrieveAlumniFunc returns functionality to retrieve all alumni
 type RetrieveAlumniFunc func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, pkg.PageInfo, error)
+
+// HappyBirthdayFunc returns functionality to retrieve alumni's with todays birthday
+type HappyBirthdayFunc func() ([]pkg.HappyBirthdayAlumni, error)

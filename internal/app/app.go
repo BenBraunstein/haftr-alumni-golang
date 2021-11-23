@@ -22,6 +22,7 @@ type App struct {
 	AddAlumniHandler          http.HandlerFunc
 	RetrieveAlumniByIDHandler http.HandlerFunc
 	RetrieveAllAlumniHandler  http.HandlerFunc
+	HappyBirthdayHandler      http.HandlerFunc
 	UpdateAlumniHandler       http.HandlerFunc
 	MakeAlumniPublicHandler   http.HandlerFunc
 	MakeAlumniPrivateHandler  http.HandlerFunc
@@ -46,6 +47,7 @@ func (a *App) Handler() http.HandlerFunc {
 	router.HandlerFunc(http.MethodOptions, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.CorsHandler)
 	router.HandlerFunc(http.MethodGet, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.RetrieveAlumniByIDHandler)
 	router.HandlerFunc(http.MethodGet, "/alumni", a.RetrieveAllAlumniHandler)
+	router.HandlerFunc(http.MethodGet, "/happybirthday", a.HappyBirthdayHandler)
 	h := http.HandlerFunc(router.ServeHTTP)
 	return h
 }
@@ -112,6 +114,7 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	corsHandler := CorsHandler()
 	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
 	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
+	happyBirthdayHandler := HappyBirthdayHandler(oa.RetrieveAlumnis, oa.EpochTimeProvider)
 	makeAlumniPublicHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, true)
 	makeAlumniPrivateHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, false)
 
@@ -122,6 +125,7 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 		AddAlumniHandler:          addAlumniHandler,
 		RetrieveAlumniByIDHandler: retrieveAlumniByIdHandler,
 		RetrieveAllAlumniHandler:  retrieveAllAlumniHandler,
+		HappyBirthdayHandler:      happyBirthdayHandler,
 		UpdateAlumniHandler:       updateAlumniHandler,
 		MakeAlumniPublicHandler:   makeAlumniPublicHandler,
 		MakeAlumniPrivateHandler:  makeAlumniPrivateHandler,

@@ -158,6 +158,7 @@ func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alum
 		Firstname:             a.Firstname,
 		Middlename:            a.Middlename,
 		Lastname:              a.Lastname,
+		HighSchoolGradYear:    a.HighSchool.YearEnded,
 		MarriedName:           a.MarriedName,
 		MotherName:            a.MotherName,
 		FatherName:            a.FatherName,
@@ -212,6 +213,14 @@ func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Cl
 		CellPhone:          a.CellPhone,
 		EmailAddress:       a.EmailAddress,
 		ProfilePictureURL:  url,
+	}
+}
+
+func ToHappyBirthdayAlumni(a internal.Alumni) pkg.HappyBirthdayAlumni {
+	return pkg.HappyBirthdayAlumni{
+		Firstname:          a.Firstname,
+		Lastname:           a.Lastname,
+		HighSchoolGradYear: a.HighSchool.YearEnded,
 	}
 }
 
