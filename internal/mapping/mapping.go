@@ -52,9 +52,11 @@ func ToDBAlumni(r pkg.AlumniRequest, s3Filename string, provideTime time.EpochPr
 		Middlename:            r.Middlename,
 		Lastname:              r.Lastname,
 		MarriedName:           r.MarriedName,
+		MaidenName:            r.MaidenName,
 		MotherName:            r.MotherName,
 		FatherName:            r.FatherName,
 		SpouseName:            r.SpouseName,
+		SpouseMaidenName:      r.SpouseMaidenName,
 		CurrentAddress:        internal.Address(r.CurrentAddress),
 		HomePhone:             r.HomePhone,
 		CellPhone:             r.CellPhone,
@@ -85,6 +87,7 @@ func ToDBAlumni(r pkg.AlumniRequest, s3Filename string, provideTime time.EpochPr
 		AlumniPositions:       r.AlumniPositions,
 		Siblings:              toDBSiblings(r.Siblings),
 		Children:              toDBChildren(r.Children),
+		Grandparents:          toDBGrandparents(r.Grandparents),
 		Comment:               r.Comment,
 		ProfilePictureKey:     s3Filename,
 		CreatedTimestamp:      currentTime,
@@ -107,9 +110,11 @@ func ToAlumniUpdate(r pkg.UpdateAlumniRequest, s3Filename string, provideTime ti
 		Middlename:            r.Middlename,
 		Lastname:              r.Lastname,
 		MarriedName:           r.MarriedName,
+		MaidenName:            r.MaidenName,
 		MotherName:            r.MotherName,
 		FatherName:            r.FatherName,
 		SpouseName:            r.SpouseName,
+		SpouseMaidenName:      r.SpouseMaidenName,
 		CurrentAddress:        internal.Address(r.CurrentAddress),
 		HomePhone:             r.HomePhone,
 		CellPhone:             r.CellPhone,
@@ -140,6 +145,7 @@ func ToAlumniUpdate(r pkg.UpdateAlumniRequest, s3Filename string, provideTime ti
 		AlumniPositions:       r.AlumniPositions,
 		Siblings:              toDBSiblings(r.Siblings),
 		Children:              toDBChildren(r.Children),
+		Grandparents:          toDBGrandparents(r.Grandparents),
 		Comment:               r.Comment,
 		ProfilePictureKey:     s3Filename,
 		LastUpdatedTimestamp:  provideTime(),
@@ -160,9 +166,11 @@ func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alum
 		Lastname:              a.Lastname,
 		HighSchoolGradYear:    a.HighSchool.YearEnded,
 		MarriedName:           a.MarriedName,
+		MaidenName:            a.MaidenName,
 		MotherName:            a.MotherName,
 		FatherName:            a.FatherName,
 		SpouseName:            a.SpouseName,
+		SpouseMaidenName:      a.SpouseMaidenName,
 		CurrentAddress:        pkg.Address(a.CurrentAddress),
 		HomePhone:             a.HomePhone,
 		CellPhone:             a.CellPhone,
@@ -193,6 +201,7 @@ func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alum
 		AlumniPositions:       a.AlumniPositions,
 		Siblings:              toDTOSiblings(a.Siblings),
 		Children:              toDTOChildren(a.Children),
+		Grandparents:          toDTOGrandparents(a.Grandparents),
 		Comment:               a.Comment,
 		IsPublic:              a.IsPublic,
 		ProfilePictureURL:     url,
@@ -298,4 +307,20 @@ func toDTOChildren(cc []internal.Child) []pkg.Child {
 		newCC = append(newCC, pkg.Child(c))
 	}
 	return newCC
+}
+
+func toDBGrandparents(gg []pkg.Grandparent) []internal.Grandparent {
+	newGG := []internal.Grandparent{}
+	for _, g := range gg {
+		newGG = append(newGG, internal.Grandparent(g))
+	}
+	return newGG
+}
+
+func toDTOGrandparents(gg []internal.Grandparent) []pkg.Grandparent {
+	newGG := []pkg.Grandparent{}
+	for _, g := range gg {
+		newGG = append(newGG, pkg.Grandparent(g))
+	}
+	return newGG
 }
