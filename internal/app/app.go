@@ -49,6 +49,7 @@ func (a *App) Handler() http.HandlerFunc {
 	router.HandlerFunc(http.MethodGet, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.RetrieveAlumniByIDHandler)
 	router.HandlerFunc(http.MethodGet, "/alumni", a.RetrieveAllAlumniHandler)
 	router.HandlerFunc(http.MethodGet, "/csv/alumni", a.ExportCSVHandler)
+	router.HandlerFunc(http.MethodOptions, "/csv/alumni", a.CorsHandler)
 	router.HandlerFunc(http.MethodGet, "/happybirthday", a.HappyBirthdayHandler)
 	h := http.HandlerFunc(router.ServeHTTP)
 	return h
