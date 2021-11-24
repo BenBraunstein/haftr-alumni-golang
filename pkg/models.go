@@ -240,7 +240,6 @@ type Grandparent struct {
 	GrandfatherFirstname string `json:"grandfatherFirstname"`
 	GrandmotherFirstname string `json:"grandmotherFirstname"`
 	Lastname             string `json:"lastname"`
-	Side                 string `json:"side"`
 }
 
 type Address struct {

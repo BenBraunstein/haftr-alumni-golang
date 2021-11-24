@@ -159,7 +159,6 @@ type Grandparent struct {
 	GrandfatherFirstname string `bson:"grandfatherFirstname"`
 	GrandmotherFirstname string `bson:"grandmotherFirstname"`
 	Lastname             string `bson:"lastname"`
-	Side                 string `bson:"side"`
 }
 
 type Address struct {
