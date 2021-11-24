@@ -124,10 +124,11 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 	return func(params pkg.QueryParams, alumniId string, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error) {
 		col := provideMongo.Collection(alumnisCollectionName)
 		filter := bson.M{
-			"firstname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
-			"lastname":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
-			"birthday":  bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Birthday)}},
-			"id":        bson.M{"$ne": alumniId},
+			"firstname":            bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
+			"lastname":             bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
+			"birthday":             bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Birthday)}},
+			"highschool.yearEnded": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.YearGraduated)}},
+			"id":                   bson.M{"$ne": alumniId},
 		}
 
 		if !isAdmin {

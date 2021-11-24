@@ -167,6 +167,22 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+  /csv/alumni:
+    get:
+      summary: Export CSV of Alumnis
+      description: Export CSV of Alumnis
+      operationId: exportCSV
+      tags:
+        - Alumni
+      responses:
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
   /happybirthday:
     get:
       summary: Retrieve Alumni Birthdays
@@ -175,8 +191,6 @@ paths:
       tags:
         - Alumni
       responses:
-        "200":
-          $ref: "#/components/responses/AlumniPageResponse"
         "500":
           $ref: "#/components/responses/InteralServerError"
       x-amazon-apigateway-integration:

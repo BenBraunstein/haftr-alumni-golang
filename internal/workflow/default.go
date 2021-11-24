@@ -16,6 +16,7 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/internal/token"
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
 	"github.com/aymerick/raymond"
+	"github.com/gocarina/gocsv"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -388,6 +389,41 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 		}
 
 		return cleanAlumni, pi, nil
+	}
+}
+
+func ExportCSV(retrieveAlumnis db.RetrieveAllAlumniFunc,
+	retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	presignURL storage.GetImageURLFunc) ExportCSVFunc {
+	return func(params pkg.QueryParams, tokenString string) ([]byte, error) {
+		log.Printf("Exporting CSV of alumni")
+
+		id, _, err := token.CheckUserToken(tokenString, provideTime)
+		if err != nil {
+			return []byte{}, errors.Wrap(err, "workflow - unable to decode token")
+		}
+
+		user, err := retrieveUserById(id.Val())
+		if err != nil {
+			return []byte{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
+		}
+
+		if !user.Admin {
+			return []byte{}, errors.Errorf("workflow - user does not have access to export a CSV")
+		}
+
+		aa, _, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin)
+		if err != nil {
+			return []byte{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
+		}
+
+		bb, err := gocsv.MarshalBytes(aa)
+		if err != nil {
+			return []byte{}, errors.Wrap(err, "workflow - unable to marshal to csv")
+		}
+
+		return bb, nil
 	}
 }
 

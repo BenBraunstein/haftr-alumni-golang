@@ -219,7 +219,6 @@ func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Cl
 		Firstname:          a.Firstname,
 		Lastname:           a.Lastname,
 		HighSchoolGradYear: a.HighSchool.YearEnded,
-		CellPhone:          a.CellPhone,
 		EmailAddress:       a.EmailAddress,
 		ProfilePictureURL:  url,
 	}

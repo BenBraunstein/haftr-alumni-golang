@@ -129,6 +129,12 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /alumni
             Method: get
+        ExportCSV:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /csv/alumni
+            Method: get
         HappyBirthday:
           Type: Api
           Properties:

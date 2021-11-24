@@ -31,6 +31,7 @@ const (
 	pageKey           = "page"
 	firstnameKey      = "firstname"
 	lastnameKey       = "lastname"
+	yearGraduatedKey  = "yearGraduated"
 )
 
 var (
@@ -283,6 +284,32 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	}
 }
 
+func ExportCSVHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
+	retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	presignURL storage.GetImageURLFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := getAuthToken(r)
+
+		params, err := getQueryParams(r)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		params.Limit = -1
+
+		exportCsv := workflow.ExportCSV(retrieveAlumnis, retrieveUserById, provideTime, presignURL)
+		bb, err := exportCsv(params, token)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		ServeCSV(bb, w)
+	}
+}
+
 func HappyBirthdayHandler(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.EpochProviderFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		happyBirthday := workflow.HappyBirthday(retrieveAlumnis, provideTime)
@@ -359,6 +386,13 @@ func ServeJSON(res interface{}, w http.ResponseWriter) {
 	w.Write(bb)
 }
 
+func ServeCSV(bb []byte, w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%v"`, "alumnis.csv"))
+	w.Write(bb)
+}
+
 // retrieveResourceID retrieves a resource id from an incoming http request
 func retrieveResourceID(idKey string, r *http.Request) (string, error) {
 	params := httprouter.ParamsFromContext(r.Context())
@@ -388,10 +422,11 @@ func getQueryParams(r *http.Request) (pkg.QueryParams, error) {
 	}
 
 	params := pkg.QueryParams{
-		Limit:     int64(lim),
-		Page:      int64(page),
-		Firstname: r.URL.Query().Get(firstnameKey),
-		Lastname:  r.URL.Query().Get(lastnameKey),
+		Limit:         int64(lim),
+		Page:          int64(page),
+		Firstname:     r.URL.Query().Get(firstnameKey),
+		Lastname:      r.URL.Query().Get(lastnameKey),
+		YearGraduated: r.URL.Query().Get(yearGraduatedKey),
 	}
 
 	if params.Limit == 0 {
