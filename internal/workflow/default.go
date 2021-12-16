@@ -450,6 +450,10 @@ func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 			Token: token,
 		}
 
+		if err := insertResetPassword(rp); err != nil {
+			return errors.Wrapf(err, "workflow - unable to insert reset password")
+		}
+
 		// Send email
 		et, err := getEmailTemplate(internal.ForgotPasswordTemplateName)
 		if err != nil {
@@ -485,10 +489,6 @@ func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 
 		if err := sendEmail(er); err != nil {
 			return errors.Wrapf(err, "workflow - unable to send email")
-		}
-
-		if err := insertResetPassword(rp); err != nil {
-			return errors.Wrapf(err, "workflow - unable to insert reset password")
 		}
 
 		return nil
