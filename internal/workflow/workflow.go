@@ -33,3 +33,9 @@ type HappyBirthdayFunc func() ([]pkg.HappyBirthdayAlumni, error)
 
 // ExportCSVFunc returns functionality to export a CSV with provided query params
 type ExportCSVFunc func(params pkg.QueryParams, tokenString string) ([]byte, error)
+
+// ForgotPasswordFunc returns functionality to send a reset password email
+type ForgotPasswordFunc func(email string) error
+
+// SetNewPasswordFunc returns functionality to set a new password
+type SetNewPasswordFunc func(rp pkg.ResetPassword) (pkg.User, string, error)

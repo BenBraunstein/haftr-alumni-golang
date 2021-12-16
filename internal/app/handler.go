@@ -284,6 +284,55 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	}
 }
 
+func ForgotPasswordHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
+	sendEmail email.SendEmailFunc,
+	insertResetPassword db.CreateResetPasswordFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var rp pkg.ResetPassword
+		if err := JSONToDTO(&rp, w, r); err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		forgotPassword := workflow.ForgotPassword(retrieveUserByEmail, getEmailTemplate, sendEmail, insertResetPassword)
+		if err := forgotPassword(rp.Email); err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func SetNewPasswordHandler(retrieveResetPassword db.FindResetPasswordFunc,
+	deleteResetPasswords db.DeleteResetPasswordsFunc,
+	retrieveUserByEmail db.RetrieveUserByEmailFunc,
+	replaceUser db.ReplaceUserFunc,
+	provideTime time.EpochProviderFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var rp pkg.ResetPassword
+		if err := JSONToDTO(&rp, w, r); err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		setNewPassword := workflow.SetNewPassword(retrieveResetPassword, deleteResetPasswords, retrieveUserByEmail, replaceUser, provideTime)
+		user, uToken, err := setNewPassword(rp)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		userResponse := pkg.UserResponse{
+			User:  user,
+			Token: uToken,
+		}
+
+		ServeJSON(userResponse, w)
+	}
+}
+
 func ExportCSVHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	provideTime time.EpochProviderFunc,

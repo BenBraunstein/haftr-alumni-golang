@@ -74,6 +74,12 @@ type AlumniRequest struct {
 	Comment               string        `json:"comment"`
 }
 
+type ResetPassword struct {
+	Email    string `json:"email"`
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
 type UpdateAlumniRequest struct {
 	Title                 string        `json:"title"`
 	Firstname             string        `json:"firstname"`

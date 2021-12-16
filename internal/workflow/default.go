@@ -17,6 +17,7 @@ import (
 	"github.com/BenBraunstein/haftr-alumni-golang/pkg"
 	"github.com/aymerick/raymond"
 	"github.com/gocarina/gocsv"
+	"github.com/mazen160/go-random"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,7 +35,7 @@ func AddUser(insertUser db.InsertUserFunc,
 			return pkg.User{}, "", errors.Errorf("workflow - user already exists with email=%v", u.Email)
 		}
 
-		pw, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
+		pw, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to hash password, email=%v", req.Email)
 		}
@@ -424,6 +425,116 @@ func ExportCSV(retrieveAlumnis db.RetrieveAllAlumniFunc,
 		}
 
 		return bb, nil
+	}
+}
+
+func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
+	sendEmail email.SendEmailFunc,
+	insertResetPassword db.CreateResetPasswordFunc) ForgotPasswordFunc {
+	return func(emailAddress string) error {
+		log.Printf("Sending reset password email to %v", emailAddress)
+
+		user, err := retrieveUserByEmail(emailAddress)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to retrieve user with email=%v", emailAddress)
+		}
+
+		token, err := random.String(16)
+		if err != nil {
+			return errors.Wrap(err, "workflow - unable to generate token")
+		}
+
+		rp := internal.ResetPassword{
+			Email: user.Email,
+			Token: token,
+		}
+
+		// Send email
+		et, err := getEmailTemplate(internal.ForgotPasswordTemplateName)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to retrieve email template")
+		}
+
+		bodyTpl, err := raymond.Parse(et.HTML)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to parse email body template")
+		}
+
+		subjectTpl, err := raymond.Parse(et.Subject)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to parse email subject template")
+		}
+
+		emailBody, err := bodyTpl.Exec(rp)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to exec email body template")
+		}
+
+		emailSubject, err := subjectTpl.Exec(rp)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to exec email subject template")
+		}
+
+		er := email.SendRequest{
+			Subject:     emailSubject,
+			HTMLContent: emailBody,
+			Recipient:   user.Email,
+			Sender:      internal.EmailRecipient,
+		}
+
+		if err := sendEmail(er); err != nil {
+			return errors.Wrapf(err, "workflow - unable to send email")
+		}
+
+		if err := insertResetPassword(rp); err != nil {
+			return errors.Wrapf(err, "workflow - unable to insert reset password")
+		}
+
+		return nil
+	}
+}
+
+func SetNewPassword(retrieveResetPassword db.FindResetPasswordFunc,
+	deleteResetPasswords db.DeleteResetPasswordsFunc,
+	retrieveUserByEmail db.RetrieveUserByEmailFunc,
+	replaceUser db.ReplaceUserFunc,
+	provideTime time.EpochProviderFunc) SetNewPasswordFunc {
+	return func(rp pkg.ResetPassword) (pkg.User, string, error) {
+		log.Printf("Setting new password for user with email=%v", rp.Email)
+
+		internalRP, err := retrieveResetPassword(rp.Email, rp.Token)
+		if err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to retrieve reset password")
+		}
+
+		user, err := retrieveUserByEmail(internalRP.Email)
+		if err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to retrieve user with email=%v", internalRP.Email)
+		}
+
+		// Use bcrypt to encrypt password
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(rp.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to generate hashed password")
+		}
+
+		user.Password = hashedPassword
+
+		if err := replaceUser(user); err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to replace user")
+		}
+
+		if err := deleteResetPasswords(internalRP.Email); err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to delete reset password")
+		}
+
+		uToken, err := token.CreateUserToken(user, provideTime)
+		if err != nil {
+			return pkg.User{}, "", errors.Wrapf(err, "workflow - unable to generate JWT token for userId=%v", user.ID)
+		}
+
+		return mapping.ToDTOUser(user), uToken, nil
 	}
 }
 

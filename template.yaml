@@ -99,6 +99,30 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /autologin
             Method: options
+        ForgotPassword:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /forgotpassword
+            Method: post
+        ForgotPasswordOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /forgotpassword
+            Method: options
+        SetPassword:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /setpassword
+            Method: post
+        SetPasswordOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /setpassword
+            Method: options
         CreateAlumni:
           Type: Api
           Properties:

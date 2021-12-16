@@ -19,6 +19,8 @@ type App struct {
 	AddUserHandler            http.HandlerFunc
 	LoginUserHandler          http.HandlerFunc
 	AutoLoginUserHandler      http.HandlerFunc
+	ForgotPasswordHandler     http.HandlerFunc
+	SetNewPasswordHandler     http.HandlerFunc
 	AddAlumniHandler          http.HandlerFunc
 	RetrieveAlumniByIDHandler http.HandlerFunc
 	RetrieveAllAlumniHandler  http.HandlerFunc
@@ -39,6 +41,10 @@ func (a *App) Handler() http.HandlerFunc {
 	router.HandlerFunc(http.MethodOptions, "/login", a.CorsHandler)
 	router.HandlerFunc(http.MethodGet, "/autologin", a.AutoLoginUserHandler)
 	router.HandlerFunc(http.MethodOptions, "/autologin", a.CorsHandler)
+	router.HandlerFunc(http.MethodPost, "/forgotpassword", a.ForgotPasswordHandler)
+	router.HandlerFunc(http.MethodOptions, "/forgotpassword", a.CorsHandler)
+	router.HandlerFunc(http.MethodPost, "/setpassword", a.SetNewPasswordHandler)
+	router.HandlerFunc(http.MethodOptions, "/setpassword", a.CorsHandler)
 	router.HandlerFunc(http.MethodPost, "/alumni", a.AddAlumniHandler)
 	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v", alumniIdKey), a.UpdateAlumniHandler)
 	router.HandlerFunc(http.MethodPatch, fmt.Sprintf("/alumni/:%v/gopublic", alumniIdKey), a.MakeAlumniPublicHandler)
@@ -64,6 +70,9 @@ type OptionalArgs struct {
 	RetrieveUserByEmail         db.RetrieveUserByEmailFunc
 	RetrieveUserByID            db.RetrieveUserByIDFunc
 	ReplaceUser                 db.ReplaceUserFunc
+	InsertResetPassword         db.CreateResetPasswordFunc
+	RetrieveResetPassword       db.FindResetPasswordFunc
+	DeleteResetPasswords        db.DeleteResetPasswordsFunc
 	InsertAlumni                db.InsertAlumniFunc
 	RetrieveAlumniByID          db.RetrieveAlumniByIDFunc
 	RetrieveAlumnis             db.RetrieveAllAlumniFunc
@@ -112,6 +121,8 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	addUserHandler := AddUserHandler(oa.EpochTimeProvider, oa.UUIDGenerator, oa.AddUser, oa.RetrieveUserByEmail)
 	loginUserHandler := LoginUserHandler(oa.RetrieveUserByEmail, oa.EpochTimeProvider)
 	autologinUserHandler := AutoLoginUserHandler(oa.RetrieveUserByID, oa.EpochTimeProvider)
+	forgotPasswordHandler := ForgotPasswordHandler(oa.RetrieveUserByEmail, oa.RetrieveEmailTemplateByName, oa.SendEmail, oa.InsertResetPassword)
+	setPasswordHandler := SetNewPasswordHandler(oa.RetrieveResetPassword, oa.DeleteResetPasswords, oa.RetrieveUserByEmail, oa.ReplaceUser, oa.EpochTimeProvider)
 	addAlumniHandler := AddAlumniHandler(oa.RetrieveUserByID, oa.InsertAlumni, oa.ReplaceUser, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
 	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
 	corsHandler := CorsHandler()
@@ -126,6 +137,8 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 		AddUserHandler:            addUserHandler,
 		LoginUserHandler:          loginUserHandler,
 		AutoLoginUserHandler:      autologinUserHandler,
+		ForgotPasswordHandler:     forgotPasswordHandler,
+		SetNewPasswordHandler:     setPasswordHandler,
 		AddAlumniHandler:          addAlumniHandler,
 		RetrieveAlumniByIDHandler: retrieveAlumniByIdHandler,
 		RetrieveAllAlumniHandler:  retrieveAllAlumniHandler,

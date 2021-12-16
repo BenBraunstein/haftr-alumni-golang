@@ -6,10 +6,11 @@ import (
 )
 
 const (
-	DefaultPageLimit          = 20
-	EmailRecipient            = "benzbraunstein@gmail.com"
-	NewAlumniTemplateName     = "NEW_ALUMNI"
-	UpdatedAlumniTemplateName = "UPDATED_ALUMNI"
+	DefaultPageLimit           = 20
+	EmailRecipient             = "benzbraunstein@gmail.com"
+	NewAlumniTemplateName      = "NEW_ALUMNI"
+	UpdatedAlumniTemplateName  = "UPDATED_ALUMNI"
+	ForgotPasswordTemplateName = "FORGOT_PASSWORD"
 )
 
 // User is the internal representation of a user
@@ -72,6 +73,11 @@ type Alumni struct {
 	ProfilePictureKey     string        `bson:"profilePictureKey"`
 	CreatedTimestamp      time.Epoch    `bson:"createdTimestamp"`
 	LastUpdatedTimestamp  time.Epoch    `bson:"lastUpdatedTimestamp"`
+}
+
+type ResetPassword struct {
+	Email string `bson:"email"`
+	Token string `bson:"token"`
 }
 
 type UpdateAlumniRequest struct {

@@ -214,3 +214,35 @@ func RetrieveEmailTemplateByName(provideMongo *mongo.Database) RetrieveEmailTemp
 		return et, nil
 	}
 }
+
+func CreateResetPassword(provideMongo *mongo.Database) CreateResetPasswordFunc {
+	return func(rp internal.ResetPassword) error {
+		col := provideMongo.Collection(resetPasswordsCollectionName)
+		_, err := col.InsertOne(context.Background(), rp)
+		return err
+	}
+}
+
+func FindResetPassword(provideMongo *mongo.Database) FindResetPasswordFunc {
+	return func(email, token string) (internal.ResetPassword, error) {
+		col := provideMongo.Collection(resetPasswordsCollectionName)
+		filter := bson.M{"email": email, "token": token}
+
+		var rp internal.ResetPassword
+		if err := col.FindOne(context.Background(), filter).Decode(&rp); err != nil {
+			return internal.ResetPassword{}, errors.Wrapf(err, "db - unable to find reset password with email=%v", email)
+		}
+
+		return rp, nil
+	}
+}
+
+func DeleteResetPasswords(provideMongo *mongo.Database) DeleteResetPasswordsFunc {
+	return func(email string) error {
+		col := provideMongo.Collection(resetPasswordsCollectionName)
+		filter := bson.M{"email": email}
+
+		_, err := col.DeleteMany(context.Background(), filter)
+		return err
+	}
+}

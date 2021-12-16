@@ -124,6 +124,70 @@ paths:
         passthroughBehavior: when_no_match
         type: aws_proxy
 
+  /forgotpassword:
+    post:
+      summary: Starts the forgot password flow
+      description: Starts the forgot password flow
+      operationId: forgotPassword
+      tags:
+        - Users
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Forgot Password Preflight Options
+      description: Forgot Password Preflight Options
+      operationId: forgotPasswordOptions
+      tags:
+        - Users
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
+  /setpassword:
+    post:
+      summary: Sets a new password
+      description: Sets a new password
+      operationId: setPassword
+      tags:
+        - Users
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Set Password Preflight Options
+      description: Set Password Preflight Options
+      operationId: setPasswordOptions
+      tags:
+        - Users
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateLoginUser"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+
   /alumni:
     post:
       summary: Creates a new Alumni
