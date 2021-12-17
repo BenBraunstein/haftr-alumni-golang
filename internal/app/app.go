@@ -124,7 +124,7 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	addUserHandler := AddUserHandler(oa.EpochTimeProvider, oa.UUIDGenerator, oa.AddUser, oa.RetrieveUserByEmail)
 	loginUserHandler := LoginUserHandler(oa.RetrieveUserByEmail, oa.EpochTimeProvider)
 	autologinUserHandler := AutoLoginUserHandler(oa.RetrieveUserByID, oa.EpochTimeProvider)
-	forgotPasswordHandler := ForgotPasswordHandler(oa.RetrieveUserByEmail, oa.RetrieveEmailTemplateByName, oa.SendEmail, oa.InsertResetPassword)
+	forgotPasswordHandler := ForgotPasswordHandler(oa.RetrieveUserByEmail, oa.RetrieveEmailTemplateByName, oa.SendEmail, oa.InsertResetPassword, oa.EpochTimeProvider)
 	setPasswordHandler := SetNewPasswordHandler(oa.RetrieveResetPassword, oa.DeleteResetPasswords, oa.RetrieveUserByEmail, oa.ReplaceUser, oa.EpochTimeProvider)
 	addAlumniHandler := AddAlumniHandler(oa.RetrieveUserByID, oa.InsertAlumni, oa.ReplaceUser, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
 	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)

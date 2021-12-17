@@ -1,6 +1,8 @@
 package internal
 
 import (
+	gotime "time"
+
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
 	"github.com/BenBraunstein/haftr-alumni-golang/common/uuid"
 )
@@ -76,8 +78,9 @@ type Alumni struct {
 }
 
 type ResetPassword struct {
-	Email string `bson:"email"`
-	Token string `bson:"token"`
+	Email            string      `bson:"email"`
+	Token            string      `bson:"token"`
+	CreatedTimestamp gotime.Time `bson:"createdTimestamp"`
 }
 
 type UpdateAlumniRequest struct {

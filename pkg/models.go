@@ -262,3 +262,7 @@ type PageInfo struct {
 	CurrentPage int64 `json:"currentPage"`
 	LastPage    int64 `json:"lastPage"`
 }
+
+type Response struct {
+	Message string `json:"message"`
+}

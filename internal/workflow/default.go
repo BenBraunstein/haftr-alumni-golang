@@ -431,7 +431,8 @@ func ExportCSV(retrieveAlumnis db.RetrieveAllAlumniFunc,
 func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	sendEmail email.SendEmailFunc,
-	insertResetPassword db.CreateResetPasswordFunc) ForgotPasswordFunc {
+	insertResetPassword db.CreateResetPasswordFunc,
+	provideTime time.EpochProviderFunc) ForgotPasswordFunc {
 	return func(emailAddress string) error {
 		log.Printf("Sending reset password email to %v", emailAddress)
 
@@ -446,8 +447,9 @@ func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 		}
 
 		rp := internal.ResetPassword{
-			Email: user.Email,
-			Token: token,
+			Email:            user.Email,
+			Token:            token,
+			CreatedTimestamp: provideTime().ToISO8601().Val(),
 		}
 
 		if err := insertResetPassword(rp); err != nil {

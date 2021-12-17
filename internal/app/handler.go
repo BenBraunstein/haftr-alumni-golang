@@ -287,7 +287,8 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 func ForgotPasswordHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
 	sendEmail email.SendEmailFunc,
-	insertResetPassword db.CreateResetPasswordFunc) http.HandlerFunc {
+	insertResetPassword db.CreateResetPasswordFunc,
+	provideTime time.EpochProviderFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var rp pkg.ResetPassword
 		if err := JSONToDTO(&rp, w, r); err != nil {
@@ -295,13 +296,17 @@ func ForgotPasswordHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 			return
 		}
 
-		forgotPassword := workflow.ForgotPassword(retrieveUserByEmail, getEmailTemplate, sendEmail, insertResetPassword)
+		forgotPassword := workflow.ForgotPassword(retrieveUserByEmail, getEmailTemplate, sendEmail, insertResetPassword, provideTime)
 		if err := forgotPassword(rp.Email); err != nil {
 			ServeInternalError(err, w)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
+		resp := pkg.Response{
+			Message: "Success",
+		}
+
+		ServeJSON(resp, w)
 	}
 }
 
