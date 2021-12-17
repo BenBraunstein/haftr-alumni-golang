@@ -302,11 +302,7 @@ func ForgotPasswordHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 			return
 		}
 
-		resp := pkg.Response{
-			Message: "Success",
-		}
-
-		ServeJSON(resp, w)
+		ServeJSON(nil, w)
 	}
 }
 
