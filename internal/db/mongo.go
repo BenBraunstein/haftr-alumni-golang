@@ -48,6 +48,34 @@ func RetrieveUserByID(provideMongo *mongo.Database) RetrieveUserByIDFunc {
 	}
 }
 
+func RetrieveUsersAlumniIDs(provideMongo *mongo.Database) RetrieveUsersAlumniIDsFunc {
+	return func(status string) ([]string, error) {
+		col := provideMongo.Collection(usersCollectionName)
+
+		filter := bson.M{}
+		if status != "" {
+			filter = bson.M{"status": status}
+		}
+		ctx := context.Background()
+		cur, err := col.Find(ctx, filter)
+		if err != nil {
+			return []string{}, errors.Wrapf(err, "db - unable to retrieve users")
+		}
+
+		defer cur.Close(ctx)
+		var ids []string
+		for cur.Next(ctx) {
+			var u internal.User
+			if err := cur.Decode(&u); err != nil {
+				return []string{}, errors.Wrap(err, "db - error decoding user")
+			}
+			ids = append(ids, u.AlumniID.Val())
+		}
+
+		return ids, nil
+	}
+}
+
 func ReplaceUser(provideMongo *mongo.Database) ReplaceUserFunc {
 	return func(u internal.User) error {
 		col := provideMongo.Collection(usersCollectionName)
@@ -121,7 +149,7 @@ func ChangeAlumniPrivacy(provideMongo *mongo.Database) ChangeAlumniPrivacyFunc {
 }
 
 func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
-	return func(params pkg.QueryParams, alumniId string, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error) {
+	return func(params pkg.QueryParams, alumniId string, isAdmin bool, ids ...string) ([]internal.Alumni, pkg.PageInfo, error) {
 		col := provideMongo.Collection(alumnisCollectionName)
 		filter := bson.M{
 			"firstname":            bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
@@ -133,6 +161,10 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 
 		if !isAdmin {
 			filter["isPublic"] = true
+		}
+
+		if len(ids) > 0 {
+			filter["id"] = bson.M{"$in": ids, "$ne": alumniId}
 		}
 
 		var skip int64

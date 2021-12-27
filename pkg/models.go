@@ -21,6 +21,7 @@ type User struct {
 	Email    string  `json:"email"`
 	AlumniID uuid.V4 `json:"alumniId"`
 	Admin    bool    `json:"admin"`
+	Status   string  `json:"status"`
 }
 
 type UserResponse struct {
@@ -206,6 +207,7 @@ type QueryParams struct {
 	Firstname     string `json:"firstname"`
 	Lastname      string `json:"lastname"`
 	YearGraduated string `json:"yearGraduated"`
+	Status        string `json:"status"`
 	Birthday      string
 }
 

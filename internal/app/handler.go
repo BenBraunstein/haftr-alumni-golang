@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -26,12 +27,14 @@ const (
 	profilePictureKey = "profile"
 	authTokenKey      = "Authorization"
 	jsonDataKey       = "json"
+	userIdKey         = "userId"
 	alumniIdKey       = "alumniId"
 	limitKey          = "limit"
 	pageKey           = "page"
 	firstnameKey      = "firstname"
 	lastnameKey       = "lastname"
 	yearGraduatedKey  = "yearGraduated"
+	statusKey         = "status"
 )
 
 var (
@@ -105,6 +108,52 @@ func AutoLoginUserHandler(retrieveUserById db.RetrieveUserByIDFunc, provideTime 
 		}
 
 		ServeJSON(resp, w)
+	}
+}
+
+func ApproveUserHandler(retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	replaceUser db.ReplaceUserFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := getAuthToken(r)
+
+		userId, err := retrieveResourceID(userIdKey, r)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		approveUser := workflow.ApproveUser(retrieveUserById, provideTime, replaceUser)
+		user, err := approveUser(userId, token)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		ServeJSON(user, w)
+	}
+}
+
+func DenyUserHandler(retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	replaceUser db.ReplaceUserFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := getAuthToken(r)
+
+		userId, err := retrieveResourceID(userIdKey, r)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		denyUser := workflow.DenyUser(retrieveUserById, provideTime, replaceUser)
+		user, err := denyUser(userId, token)
+		if err != nil {
+			ServeInternalError(err, w)
+			return
+		}
+
+		ServeJSON(user, w)
 	}
 }
 
@@ -257,6 +306,7 @@ func RetrieveAlumniByIDHandler(retrieveByID db.RetrieveAlumniByIDFunc,
 
 func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -268,7 +318,7 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return
 		}
 
-		retrieveAlumnis := workflow.RetrieveAlumni(retrieveAlumnis, retrieveUserById, provideTime, presignURL)
+		retrieveAlumnis := workflow.RetrieveAlumni(retrieveAlumnis, retrieveUserById, retrieveUsersAlumniIDs, provideTime, presignURL)
 		aa, pi, err := retrieveAlumnis(params, token)
 		if err != nil {
 			ServeInternalError(err, w)
@@ -298,8 +348,7 @@ func ForgotPasswordHandler(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 
 		forgotPassword := workflow.ForgotPassword(retrieveUserByEmail, getEmailTemplate, sendEmail, insertResetPassword, provideTime)
 		if err := forgotPassword(rp.Email); err != nil {
-			ServeInternalError(err, w)
-			return
+			log.Print(err)
 		}
 
 		ServeJSON(nil, w)
@@ -336,6 +385,7 @@ func SetNewPasswordHandler(retrieveResetPassword db.FindResetPasswordFunc,
 
 func ExportCSVHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -349,7 +399,7 @@ func ExportCSVHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 
 		params.Limit = -1
 
-		exportCsv := workflow.ExportCSV(retrieveAlumnis, retrieveUserById, provideTime, presignURL)
+		exportCsv := workflow.ExportCSV(retrieveAlumnis, retrieveUserById, retrieveUsersAlumniIDs, provideTime, presignURL)
 		bb, err := exportCsv(params, token)
 		if err != nil {
 			ServeInternalError(err, w)
@@ -477,6 +527,7 @@ func getQueryParams(r *http.Request) (pkg.QueryParams, error) {
 		Firstname:     r.URL.Query().Get(firstnameKey),
 		Lastname:      r.URL.Query().Get(lastnameKey),
 		YearGraduated: r.URL.Query().Get(yearGraduatedKey),
+		Status:        r.URL.Query().Get(statusKey),
 	}
 
 	if params.Limit == 0 {
@@ -484,6 +535,10 @@ func getQueryParams(r *http.Request) (pkg.QueryParams, error) {
 	}
 	if params.Page == 0 {
 		params.Page = 1
+	}
+
+	if params.Status != internal.PendingUserStatus && params.Status != internal.ApprovedUserStatus && params.Status != internal.DeniedUserStatus {
+		params.Status = ""
 	}
 
 	return params, nil

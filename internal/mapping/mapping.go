@@ -19,6 +19,7 @@ func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, prov
 		Email:                strings.ToLower(req.Email),
 		Password:             securePw,
 		Admin:                false,
+		Status:               internal.PendingUserStatus,
 		CreatedTimestamp:     currentTime,
 		LastUpdatedTimestamp: currentTime,
 	}
@@ -26,11 +27,16 @@ func ToDbUser(req pkg.UserRequest, securePw []byte, genUUID uuid.GenV4Func, prov
 
 // ToDTOUser maps an internal User to a pkg User
 func ToDTOUser(u internal.User) pkg.User {
+	s := u.Status
+	if s == "" {
+		s = internal.PendingUserStatus
+	}
 	return pkg.User{
 		ID:       u.ID,
 		Email:    u.Email,
 		Admin:    u.Admin,
 		AlumniID: u.AlumniID,
+		Status:   s,
 	}
 }
 

@@ -22,6 +22,8 @@ type RetrieveUserByEmailFunc func(email string) (internal.User, error)
 
 type RetrieveUserByIDFunc func(id string) (internal.User, error)
 
+type RetrieveUsersAlumniIDsFunc func(status string) ([]string, error)
+
 type ReplaceUserFunc func(u internal.User) error
 
 type InsertAlumniFunc func(a internal.Alumni) error
@@ -32,7 +34,7 @@ type RetrieveAlumniByIDFunc func(id string) (internal.Alumni, error)
 
 type ChangeAlumniPrivacyFunc func(id string, isPublic bool) error
 
-type RetrieveAllAlumniFunc func(params pkg.QueryParams, alumniId string, isAdmin bool) ([]internal.Alumni, pkg.PageInfo, error)
+type RetrieveAllAlumniFunc func(params pkg.QueryParams, alumniId string, isAdmin bool, ids ...string) ([]internal.Alumni, pkg.PageInfo, error)
 
 type RetrieveEmailTemplateByNameFunc func(name string) (internal.EmailTemplate, error)
 

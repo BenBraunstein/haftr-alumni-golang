@@ -10,6 +10,9 @@ import (
 const (
 	DefaultPageLimit           = 20
 	EmailRecipient             = "benzbraunstein@gmail.com"
+	PendingUserStatus          = "PENDING"
+	ApprovedUserStatus         = "APPROVED"
+	DeniedUserStatus           = "DENIED"
 	NewAlumniTemplateName      = "NEW_ALUMNI"
 	UpdatedAlumniTemplateName  = "UPDATED_ALUMNI"
 	ForgotPasswordTemplateName = "FORGOT_PASSWORD"
@@ -22,6 +25,7 @@ type User struct {
 	Password             []byte     `bson:"password"`
 	AlumniID             uuid.V4    `bson:"alumniId"`
 	Admin                bool       `bson:"admin"`
+	Status               string     `bson:"status"`
 	CreatedTimestamp     time.Epoch `bson:"createdTimestamp"`
 	LastUpdatedTimestamp time.Epoch `bson:"lastUpdatedTimestamp"`
 }
@@ -183,4 +187,11 @@ type EmailTemplate struct {
 	Name    string `bson:"name"`
 	Subject string `bson:"subject"`
 	HTML    string `bson:"html"`
+}
+
+func (u User) IsApproved() bool {
+	if u.Status == ApprovedUserStatus {
+		return true
+	}
+	return false
 }

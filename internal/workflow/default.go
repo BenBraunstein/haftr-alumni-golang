@@ -101,6 +101,78 @@ func AutoLoginUser(retrieveUserById db.RetrieveUserByIDFunc, provideTime time.Ep
 	}
 }
 
+func ApproveUser(retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	replaceUser db.ReplaceUserFunc) ApproveUserFunc {
+	return func(userId string, tokenString string) (pkg.User, error) {
+		log.Printf("Approving user with userId=%v", userId)
+
+		id, _, err := token.CheckUserToken(tokenString, provideTime)
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to decode token")
+		}
+
+		user, err := retrieveUserById(id.Val())
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to find user with given token")
+		}
+
+		if !user.Admin {
+			return pkg.User{}, errors.Errorf("workflow - userId=%v is not an admin", user.ID)
+		}
+
+		userToApprove, err := retrieveUserById(userId)
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to find user to approve")
+		}
+
+		userToApprove.Status = internal.ApprovedUserStatus
+		userToApprove.LastUpdatedTimestamp = provideTime()
+
+		if err := replaceUser(userToApprove); err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to update user")
+		}
+
+		return mapping.ToDTOUser(userToApprove), nil
+	}
+}
+
+func DenyUser(retrieveUserById db.RetrieveUserByIDFunc,
+	provideTime time.EpochProviderFunc,
+	replaceUser db.ReplaceUserFunc) DenyUserFunc {
+	return func(userId string, tokenString string) (pkg.User, error) {
+		log.Printf("Denying user with userId=%v", userId)
+
+		id, _, err := token.CheckUserToken(tokenString, provideTime)
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to decode token")
+		}
+
+		user, err := retrieveUserById(id.Val())
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to find user with given token")
+		}
+
+		if !user.Admin {
+			return pkg.User{}, errors.Errorf("workflow - userId=%v is not an admin", user.ID)
+		}
+
+		userToDeny, err := retrieveUserById(userId)
+		if err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to find user to deny")
+		}
+
+		userToDeny.Status = internal.DeniedUserStatus
+		userToDeny.LastUpdatedTimestamp = provideTime()
+
+		if err := replaceUser(userToDeny); err != nil {
+			return pkg.User{}, errors.Wrap(err, "workflow - unable to update user")
+		}
+
+		return mapping.ToDTOUser(userToDeny), nil
+	}
+}
+
 func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 	insertAlumni db.InsertAlumniFunc,
 	replaceUser db.ReplaceUserFunc,
@@ -312,7 +384,7 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
 
-		if user.AlumniID.Val() != alumniId && !user.Admin && !a.IsPublic {
+		if user.AlumniID.Val() != alumniId && !user.Admin && !a.IsPublic || !user.IsApproved() && !user.Admin {
 			return pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access to alumniId=%v", user.ID, alumniId)
 		}
 
@@ -364,6 +436,7 @@ func ChangeAlumniPrivacy(retrieveByID db.RetrieveAlumniByIDFunc,
 
 func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) RetrieveAlumniFunc {
 	return func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, pkg.PageInfo, error) {
@@ -379,10 +452,23 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to find user with given token, userId=%v", user.ID)
 		}
 
-		aa, pi, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin)
+		if !user.Admin && !user.IsApproved() {
+			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Errorf("workflow - userId=%v does not have access to retrieve alumni until they are approved", user.ID)
+		}
+
+		alumniIDs, err := retrieveUsersAlumniIDs(params.Status)
+		if err != nil {
+			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to retrieve alumni ids")
+		}
+
+		fmt.Println("AlumniIDs:", len(alumniIDs))
+
+		aa, pi, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin, alumniIDs...)
 		if err != nil {
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
 		}
+
+		fmt.Println("Alumnis:", len(aa))
 
 		cleanAlumni := []pkg.CleanAlumni{}
 		for _, a := range aa {
@@ -395,6 +481,7 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 
 func ExportCSV(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) ExportCSVFunc {
 	return func(params pkg.QueryParams, tokenString string) ([]byte, error) {
@@ -414,7 +501,12 @@ func ExportCSV(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return []byte{}, errors.Errorf("workflow - user does not have access to export a CSV")
 		}
 
-		aa, _, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin)
+		alumniIDs, err := retrieveUsersAlumniIDs(params.Status)
+		if err != nil {
+			return []byte{}, errors.Wrapf(err, "workflow - unable to retrieve alumni ids")
+		}
+
+		aa, _, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin, alumniIDs...)
 		if err != nil {
 			return []byte{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
 		}

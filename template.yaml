@@ -99,6 +99,30 @@ Resources:
             RestApiId: !Ref ApiGateway
             Path: /autologin
             Method: options
+        ApproveUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users/{userId}/approve
+            Method: patch
+        ApproveUserOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users/{userId}/approve
+            Method: options
+        DenyUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users/{userId}/deny
+            Method: patch
+        DenyUserOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /users/{userId}/deny
+            Method: options
         ForgotPassword:
           Type: Api
           Properties:

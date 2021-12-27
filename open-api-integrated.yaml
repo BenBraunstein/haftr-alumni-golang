@@ -123,6 +123,78 @@ paths:
         httpMethod: POST
         passthroughBehavior: when_no_match
         type: aws_proxy
+    
+  /users/{UserID}/approve:
+    patch:
+      summary: Approve a User
+      description: Approve a User
+      operationId: approveUser
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/UserID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Approve Preflight Options
+      description: Approve Preflight Options
+      operationId: approvePreflightOptions
+      tags:
+        - Users
+      responses:
+        "204":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    
+  /users/{UserID}/deny:
+    patch:
+      summary: Deny a User
+      description: Deny a User
+      operationId: denyUser
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/UserID"
+      responses:
+        "200":
+          $ref: "#/components/responses/AlumniResponse"
+        "500":
+          $ref: "#/components/responses/InteralServerError"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
+    options:
+      summary: Deny Preflight Options
+      description: Deny Preflight Options
+      operationId: denyPreflightOptions
+      tags:
+        - Users
+      responses:
+        "204":
+          $ref: "#/components/responses/AlumniResponse"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function.Arn}/invocations
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        type: aws_proxy
 
   /forgotpassword:
     post:
@@ -806,6 +878,14 @@ components:
       name: AlumniID
       in: path
       description: The unique identifier for an Alumni in the DB
+      required: true
+      schema:
+        type: string
+        format: uuid
+    UserID:
+      name: UserID
+      in: path
+      description: The unique identifier for a User in the DB
       required: true
       schema:
         type: string

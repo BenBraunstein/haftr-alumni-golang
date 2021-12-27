@@ -13,6 +13,12 @@ type LoginUserFunc func(req pkg.UserRequest) (pkg.User, string, error)
 // AutoLoginUserFunc logs in a user using their JWT tokenand returns a representation of the user and a refreshed token for the user
 type AutoLoginUserFunc func(tokenString string) (pkg.User, string, error)
 
+// ApproveUserFunc returns functionaliy for an admin to approve a user
+type ApproveUserFunc func(userId string, tokenString string) (pkg.User, error)
+
+// DenyUserFunc returns functionaliy for an admin to deny a user
+type DenyUserFunc func(userId string, tokenString string) (pkg.User, error)
+
 // AddAlumniFunc returns functionality to add an alumni
 type AddAlumniFunc func(req pkg.AlumniRequest, fileData pkg.FileData, tokenString string, skipFileUpload bool) (pkg.Alumni, error)
 
