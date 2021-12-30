@@ -22,6 +22,8 @@ type RetrieveUserByEmailFunc func(email string) (internal.User, error)
 
 type RetrieveUserByIDFunc func(id string) (internal.User, error)
 
+type RetrieveUserByAlumniIDFunc func(alumniId string) (internal.User, error)
+
 type RetrieveUsersAlumniIDsFunc func(status string) ([]string, error)
 
 type ReplaceUserFunc func(u internal.User) error

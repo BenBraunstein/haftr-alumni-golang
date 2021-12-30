@@ -158,13 +158,15 @@ func ToAlumniUpdate(r pkg.UpdateAlumniRequest, s3Filename string, provideTime ti
 	}
 }
 
-func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alumni {
+func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc, u internal.User) pkg.Alumni {
 	url, err := presignURL(a.ProfilePictureKey)
 	if err != nil {
 		url = ""
 	}
 
 	return pkg.Alumni{
+		UserID:                u.ID,
+		Status:                u.Status,
 		ID:                    a.ID,
 		Title:                 a.Title,
 		Firstname:             a.Firstname,
@@ -214,7 +216,7 @@ func ToDTOAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Alum
 	}
 }
 
-func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.CleanAlumni {
+func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc, u internal.User) pkg.CleanAlumni {
 	url, err := presignURL(a.ProfilePictureKey)
 	if err != nil {
 		url = ""
@@ -222,6 +224,7 @@ func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc) pkg.Cl
 
 	return pkg.CleanAlumni{
 		ID:                 a.ID,
+		Status:             u.Status,
 		Firstname:          a.Firstname,
 		Lastname:           a.Lastname,
 		HighSchoolGradYear: a.HighSchool.YearEnded,

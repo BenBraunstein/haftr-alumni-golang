@@ -48,6 +48,19 @@ func RetrieveUserByID(provideMongo *mongo.Database) RetrieveUserByIDFunc {
 	}
 }
 
+func RetrieveUserByAlumniID(provideMongo *mongo.Database) RetrieveUserByAlumniIDFunc {
+	return func(alumniId string) (internal.User, error) {
+		col := provideMongo.Collection(usersCollectionName)
+		filter := bson.M{"alumniId": alumniId}
+
+		var u internal.User
+		if err := col.FindOne(context.Background(), filter).Decode(&u); err != nil {
+			return internal.User{}, errors.Wrapf(err, "db - unable to find user with alumniId=%v", alumniId)
+		}
+		return u, nil
+	}
+}
+
 func RetrieveUsersAlumniIDs(provideMongo *mongo.Database) RetrieveUsersAlumniIDsFunc {
 	return func(status string) ([]string, error) {
 		col := provideMongo.Collection(usersCollectionName)

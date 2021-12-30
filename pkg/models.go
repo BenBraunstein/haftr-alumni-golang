@@ -127,6 +127,8 @@ type UpdateAlumniRequest struct {
 }
 
 type Alumni struct {
+	UserID                uuid.V4       `json:"userId"`
+	Status                string        `json:"status"`
 	ID                    uuid.V4       `json:"id"`
 	Title                 string        `json:"title"`
 	Firstname             string        `json:"firstname"`
@@ -177,6 +179,7 @@ type Alumni struct {
 
 type CleanAlumni struct {
 	ID                 uuid.V4 `json:"id"`
+	Status             string  `json:"status"`
 	Firstname          string  `json:"firstname"`
 	Lastname           string  `json:"lastname"`
 	HighSchoolGradYear string  `json:"highSchoolGradYear"`

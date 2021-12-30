@@ -215,7 +215,7 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 		}
 
 		if user.Admin {
-			return mapping.ToDTOAlumni(a, presignURL), nil
+			return mapping.ToDTOAlumni(a, presignURL, internal.User{}), nil
 		}
 
 		// Add the AlumniID to the User
@@ -261,7 +261,7 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
 		}
 
-		return mapping.ToDTOAlumni(a, presignURL), nil
+		return mapping.ToDTOAlumni(a, presignURL, internal.User{}), nil
 	}
 }
 
@@ -358,12 +358,13 @@ func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to send email")
 		}
 
-		return mapping.ToDTOAlumni(alum, presignURL), nil
+		return mapping.ToDTOAlumni(alum, presignURL, internal.User{}), nil
 	}
 }
 
 func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUserByAlumniId db.RetrieveUserByAlumniIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) RetrieveAlumniByIDFunc {
 	return func(alumniId string, tokenString string) (pkg.AlumniInterface, error) {
@@ -390,11 +391,16 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 
 		// If a user tried to access another user who is public
 		if user.AlumniID.Val() != alumniId && !user.Admin && a.IsPublic {
-			ca := mapping.ToCleanAlumni(a, presignURL)
+			ca := mapping.ToCleanAlumni(a, presignURL, internal.User{})
 			return ca, nil
 		}
 
-		return mapping.ToDTOAlumni(a, presignURL), nil
+		aUser, err := retrieveUserByAlumniId(a.ID.Val())
+		if err != nil {
+			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve user with alumniId=%v", a.ID)
+		}
+
+		return mapping.ToDTOAlumni(a, presignURL, aUser), nil
 	}
 }
 
@@ -430,13 +436,14 @@ func ChangeAlumniPrivacy(retrieveByID db.RetrieveAlumniByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
 
-		return mapping.ToDTOAlumni(a, presignURL), nil
+		return mapping.ToDTOAlumni(a, presignURL, internal.User{}), nil
 	}
 }
 
 func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
+	retrieveUserByAlumniId db.RetrieveUserByAlumniIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) RetrieveAlumniFunc {
 	return func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, pkg.PageInfo, error) {
@@ -472,7 +479,12 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 
 		cleanAlumni := []pkg.CleanAlumni{}
 		for _, a := range aa {
-			cleanAlumni = append(cleanAlumni, mapping.ToCleanAlumni(a, presignURL))
+			aUser, err := retrieveUserByAlumniId(a.ID.Val())
+			if err != nil {
+				return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to retrieve user with alumniId=%v", a.ID)
+			}
+
+			cleanAlumni = append(cleanAlumni, mapping.ToCleanAlumni(a, presignURL, aUser))
 		}
 
 		return cleanAlumni, pi, nil

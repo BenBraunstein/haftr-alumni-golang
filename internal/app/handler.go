@@ -282,6 +282,7 @@ func CorsHandler() http.HandlerFunc {
 
 func RetrieveAlumniByIDHandler(retrieveByID db.RetrieveAlumniByIDFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
+	retrieveUserByAlumniId db.RetrieveUserByAlumniIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -293,7 +294,7 @@ func RetrieveAlumniByIDHandler(retrieveByID db.RetrieveAlumniByIDFunc,
 			return
 		}
 
-		retrieveAlum := workflow.RetrieveAlumniByID(retrieveByID, retrieveUserById, provideTime, presignURL)
+		retrieveAlum := workflow.RetrieveAlumniByID(retrieveByID, retrieveUserById, retrieveUserByAlumniId, provideTime, presignURL)
 		alum, err := retrieveAlum(alumId, token)
 		if err != nil {
 			ServeInternalError(err, w)
@@ -307,6 +308,7 @@ func RetrieveAlumniByIDHandler(retrieveByID db.RetrieveAlumniByIDFunc,
 func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 	retrieveUserById db.RetrieveUserByIDFunc,
 	retrieveUsersAlumniIDs db.RetrieveUsersAlumniIDsFunc,
+	retrieveUserByAlumniId db.RetrieveUserByAlumniIDFunc,
 	provideTime time.EpochProviderFunc,
 	presignURL storage.GetImageURLFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -318,7 +320,7 @@ func RetrieveAlumniHandler(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return
 		}
 
-		retrieveAlumnis := workflow.RetrieveAlumni(retrieveAlumnis, retrieveUserById, retrieveUsersAlumniIDs, provideTime, presignURL)
+		retrieveAlumnis := workflow.RetrieveAlumni(retrieveAlumnis, retrieveUserById, retrieveUsersAlumniIDs, retrieveUserByAlumniId, provideTime, presignURL)
 		aa, pi, err := retrieveAlumnis(params, token)
 		if err != nil {
 			ServeInternalError(err, w)

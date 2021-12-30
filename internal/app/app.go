@@ -75,6 +75,7 @@ type OptionalArgs struct {
 	AddUser                     db.InsertUserFunc
 	RetrieveUserByEmail         db.RetrieveUserByEmailFunc
 	RetrieveUserByID            db.RetrieveUserByIDFunc
+	RetrieveUserByAlumniID      db.RetrieveUserByAlumniIDFunc
 	RetrieveUsersAlumniIDs      db.RetrieveUsersAlumniIDsFunc
 	ReplaceUser                 db.ReplaceUserFunc
 	InsertResetPassword         db.CreateResetPasswordFunc
@@ -106,6 +107,7 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 		AddUser:                     db.InsertUser(provideDb),
 		RetrieveUserByEmail:         db.RetrieveUserByEmail(provideDb),
 		RetrieveUserByID:            db.RetrieveUserByID(provideDb),
+		RetrieveUserByAlumniID:      db.RetrieveUserByAlumniID(provideDb),
 		RetrieveUsersAlumniIDs:      db.RetrieveUsersAlumniIDs(provideDb),
 		ReplaceUser:                 db.ReplaceUser(provideDb),
 		InsertResetPassword:         db.CreateResetPassword(provideDb),
@@ -138,8 +140,8 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	setPasswordHandler := SetNewPasswordHandler(oa.RetrieveResetPassword, oa.DeleteResetPasswords, oa.RetrieveUserByEmail, oa.ReplaceUser, oa.EpochTimeProvider)
 	addAlumniHandler := AddAlumniHandler(oa.RetrieveUserByID, oa.InsertAlumni, oa.ReplaceUser, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
 	updateAlumniHandler := UpdateAlumniHandler(oa.RetrieveUserByID, oa.UpdateAlumni, oa.RetrieveAlumniByID, oa.RetrieveEmailTemplateByName, oa.EpochTimeProvider, oa.UUIDGenerator, uploadImage, presignURL, oa.SendEmail)
-	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.EpochTimeProvider, presignURL)
-	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.RetrieveUsersAlumniIDs, oa.EpochTimeProvider, presignURL)
+	retrieveAlumniByIdHandler := RetrieveAlumniByIDHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.RetrieveUserByAlumniID, oa.EpochTimeProvider, presignURL)
+	retrieveAllAlumniHandler := RetrieveAlumniHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.RetrieveUsersAlumniIDs, oa.RetrieveUserByAlumniID, oa.EpochTimeProvider, presignURL)
 	makeAlumniPublicHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, true)
 	makeAlumniPrivateHandler := ChangeAlumniPrivacyHandler(oa.RetrieveAlumniByID, oa.RetrieveUserByID, oa.ChangeAlumniPrivacyStatus, oa.EpochTimeProvider, presignURL, false)
 	exportCsvHandler := ExportCSVHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.RetrieveUsersAlumniIDs, oa.EpochTimeProvider, presignURL)
