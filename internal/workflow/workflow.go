@@ -35,7 +35,7 @@ type ChangeAlumniPrivacyFunc func(alumniId string, tokenString string) (pkg.Alum
 type RetrieveAlumniFunc func(params pkg.QueryParams, tokenString string) ([]pkg.CleanAlumni, pkg.PageInfo, error)
 
 // HappyBirthdayFunc returns functionality to retrieve alumni's with todays birthday
-type HappyBirthdayFunc func() ([]pkg.HappyBirthdayAlumni, error)
+type HappyBirthdayFunc func() (pkg.HappyBirthdayResponse, error)
 
 // ExportCSVFunc returns functionality to export a CSV with provided query params
 type ExportCSVFunc func(params pkg.QueryParams, tokenString string) ([]byte, error)

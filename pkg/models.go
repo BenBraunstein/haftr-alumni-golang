@@ -191,6 +191,12 @@ type HappyBirthdayAlumni struct {
 	Firstname          string `json:"firstname"`
 	Lastname           string `json:"lastname"`
 	HighSchoolGradYear string `json:"highSchoolGradYear"`
+	Birthday           string `json:"birthday"`
+}
+
+type HappyBirthdayResponse struct {
+	Today    []HappyBirthdayAlumni `json:"today"`
+	Upcoming []HappyBirthdayAlumni `json:"upcoming"`
 }
 
 type RetrieveCleanAlumniResponse struct {

@@ -385,7 +385,7 @@ func RetrieveAlumniByID(retrieveByID db.RetrieveAlumniByIDFunc,
 			return pkg.Alumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumniId=%v", alumniId)
 		}
 
-		if user.AlumniID.Val() != alumniId && !user.Admin && !a.IsPublic || !user.IsApproved() && !user.Admin {
+		if user.AlumniID.Val() != alumniId && !user.Admin && !a.IsPublic || user.AlumniID.Val() != alumniId && !user.IsApproved() && !user.Admin {
 			return pkg.Alumni{}, errors.Errorf("workflow - userId=%v does not have access to alumniId=%v", user.ID, alumniId)
 		}
 
@@ -468,14 +468,10 @@ func RetrieveAlumni(retrieveAlumnis db.RetrieveAllAlumniFunc,
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrapf(err, "workflow - unable to retrieve alumni ids")
 		}
 
-		fmt.Println("AlumniIDs:", len(alumniIDs))
-
 		aa, pi, err := retrieveAlumnis(params, user.AlumniID.Val(), user.Admin, alumniIDs...)
 		if err != nil {
 			return []pkg.CleanAlumni{}, pkg.PageInfo{}, errors.Wrap(err, "workflow - unable to retrieve all alumnis")
 		}
-
-		fmt.Println("Alumnis:", len(aa))
 
 		cleanAlumni := []pkg.CleanAlumni{}
 		for _, a := range aa {
@@ -645,7 +641,7 @@ func SetNewPassword(retrieveResetPassword db.FindResetPasswordFunc,
 }
 
 func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.EpochProviderFunc) HappyBirthdayFunc {
-	return func() ([]pkg.HappyBirthdayAlumni, error) {
+	return func() (pkg.HappyBirthdayResponse, error) {
 		ds := provideTime().ToISO8601().DateString()
 		m := strings.Split(ds, "-")[1]
 		d := strings.Split(ds, "-")[2]
@@ -658,7 +654,7 @@ func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.Ep
 
 		aa, _, err := retrieveAlumnis(qp, "", true)
 		if err != nil {
-			return []pkg.HappyBirthdayAlumni{}, errors.Wrapf(err, "workflow - unable to retrieve alumnis")
+			return pkg.HappyBirthdayResponse{}, errors.Wrapf(err, "workflow - unable to retrieve alumnis")
 		}
 
 		hbdAA := []pkg.HappyBirthdayAlumni{}
@@ -666,6 +662,36 @@ func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.Ep
 			hbdAA = append(hbdAA, mapping.ToHappyBirthdayAlumni(a))
 		}
 
-		return hbdAA, nil
+		upcoming := []pkg.HappyBirthdayAlumni{}
+		currentDay := provideTime().ToISO8601().Val()
+		nextDay := currentDay
+		for i := 0; i < 6; i++ {
+			nextDay = nextDay.AddDate(0, 0, 1)
+			iso, err := time.New(nextDay)
+			if err != nil {
+				return pkg.HappyBirthdayResponse{}, errors.Wrapf(err, "workflow - unable to create time")
+			}
+			ds := iso.DateString()
+			m := strings.Split(ds, "-")[1]
+			d := strings.Split(ds, "-")[2]
+			bday := fmt.Sprintf("%v-%v", m, d)
+			qp := pkg.QueryParams{Limit: -1, Birthday: bday}
+
+			aa, _, err := retrieveAlumnis(qp, "", true)
+			if err != nil {
+				return pkg.HappyBirthdayResponse{}, errors.Wrapf(err, "workflow - unable to retrieve alumnis")
+			}
+			for _, a := range aa {
+				fmt.Println(a.ID)
+				upcoming = append(upcoming, mapping.ToHappyBirthdayAlumni(a))
+			}
+		}
+
+		hbdResponse := pkg.HappyBirthdayResponse{
+			Today:    hbdAA,
+			Upcoming: upcoming,
+		}
+
+		return hbdResponse, nil
 	}
 }

@@ -1,6 +1,7 @@
 package mapping
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/BenBraunstein/haftr-alumni-golang/common/time"
@@ -234,11 +235,21 @@ func ToCleanAlumni(a internal.Alumni, presignURL storage.GetImageURLFunc, u inte
 }
 
 func ToHappyBirthdayAlumni(a internal.Alumni) pkg.HappyBirthdayAlumni {
-	return pkg.HappyBirthdayAlumni{
+	aDTO := pkg.HappyBirthdayAlumni{
 		Firstname:          a.Firstname,
 		Lastname:           a.Lastname,
 		HighSchoolGradYear: a.HighSchool.YearEnded,
 	}
+	if a.Birthday != "" {
+		iso, _ := time.NewISO8601(a.Birthday)
+		ds := iso.DateString()
+		m := strings.Split(ds, "-")[1]
+		d := strings.Split(ds, "-")[2]
+		bday := fmt.Sprintf("%v-%v", m, d)
+		aDTO.Birthday = bday
+	}
+
+	return aDTO
 }
 
 func toDBSchools(ss []pkg.School) []internal.School {

@@ -166,10 +166,17 @@ func RetrieveAllAlumni(provideMongo *mongo.Database) RetrieveAllAlumniFunc {
 		col := provideMongo.Collection(alumnisCollectionName)
 		filter := bson.M{
 			"firstname":            bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Firstname), Options: "i"}},
-			"lastname":             bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}},
 			"birthday":             bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Birthday)}},
 			"highschool.yearEnded": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.YearGraduated)}},
 			"id":                   bson.M{"$ne": alumniId},
+			"$or": []bson.M{
+				{"lastname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+				{"marriedName": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+				{"maidenName": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+				{"spouseMaidenName": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+				{"siblings.lastname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+				{"grandparents.lastname": bson.M{"$regex": primitive.Regex{Pattern: regexp.QuoteMeta(params.Lastname), Options: "i"}}},
+			},
 		}
 
 		if !isAdmin {
