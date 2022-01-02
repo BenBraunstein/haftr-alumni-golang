@@ -1,5 +1,6 @@
 OUTPUT_LOCAL = main-local
 OUTPUT = main
+OUTPUT_SCHEDULED = main-scheduled
 SERVICE_NAME = haftr-alumni-golang
 PACKAGED_TEMPLATE = packaged.yaml # will be archived
 TEMPLATE = template.yaml
@@ -8,6 +9,7 @@ ZIPFILE = lambda.zip
 
 clean:
 	rm -f $(OUTPUT_LOCAL)
+	rm -f $(OUTPUT_SCHEDULED)
 	rm -f $(OUTPUT)
 	rm -f $(ZIPFILE)
 
@@ -22,6 +24,7 @@ lambda:
 
 main:
 	go build -o $(OUTPUT) ./cmd/$(SERVICE_NAME)-lambda/main.go
+	go build -o $(OUTPUT_SCHEDULED) ./cmd/$(SERVICE_NAME)-scheduled/main.go
 
 $(ZIPFILE): clean lambda
 	zip -9 -r $(ZIPFILE) $(OUTPUT)
@@ -44,8 +47,8 @@ build-local:
 run: build-local
 	@echo ">> Running application ..."
 	PORT=8416 \
-	MONGO_URI= \
+	MONGO_URI="" \
 	DB_NAME=haftr \
-	S3_BUCKET=haftr-alumni-photos-dev \
+	S3_BUCKET=haftr-alumni-golang-photos-dev \
 	JWT_SECRET= \
 	./$(OUTPUT_LOCAL)

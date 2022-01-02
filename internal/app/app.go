@@ -16,22 +16,23 @@ import (
 
 // App is a representation of an App
 type App struct {
-	AddUserHandler            http.HandlerFunc
-	LoginUserHandler          http.HandlerFunc
-	AutoLoginUserHandler      http.HandlerFunc
-	ApproveUserHandler        http.HandlerFunc
-	DenyUserHandler           http.HandlerFunc
-	ForgotPasswordHandler     http.HandlerFunc
-	SetNewPasswordHandler     http.HandlerFunc
-	AddAlumniHandler          http.HandlerFunc
-	RetrieveAlumniByIDHandler http.HandlerFunc
-	RetrieveAllAlumniHandler  http.HandlerFunc
-	HappyBirthdayHandler      http.HandlerFunc
-	ExportCSVHandler          http.HandlerFunc
-	UpdateAlumniHandler       http.HandlerFunc
-	MakeAlumniPublicHandler   http.HandlerFunc
-	MakeAlumniPrivateHandler  http.HandlerFunc
-	CorsHandler               http.HandlerFunc
+	AddUserHandler              http.HandlerFunc
+	LoginUserHandler            http.HandlerFunc
+	AutoLoginUserHandler        http.HandlerFunc
+	ApproveUserHandler          http.HandlerFunc
+	DenyUserHandler             http.HandlerFunc
+	ForgotPasswordHandler       http.HandlerFunc
+	SetNewPasswordHandler       http.HandlerFunc
+	AddAlumniHandler            http.HandlerFunc
+	RetrieveAlumniByIDHandler   http.HandlerFunc
+	RetrieveAllAlumniHandler    http.HandlerFunc
+	HappyBirthdayHandler        http.HandlerFunc
+	ExportCSVHandler            http.HandlerFunc
+	UpdateAlumniHandler         http.HandlerFunc
+	MakeAlumniPublicHandler     http.HandlerFunc
+	MakeAlumniPrivateHandler    http.HandlerFunc
+	HappyBirthdayEmailScheduled ScheduledFunc
+	CorsHandler                 http.HandlerFunc
 }
 
 // Handler turns the App into an http hander
@@ -147,24 +148,31 @@ func New(provideDb *mongo.Database, opts ...Option) App {
 	exportCsvHandler := ExportCSVHandler(oa.RetrieveAlumnis, oa.RetrieveUserByID, oa.RetrieveUsersAlumniIDs, oa.EpochTimeProvider, presignURL)
 	happyBirthdayHandler := HappyBirthdayHandler(oa.RetrieveAlumnis, oa.EpochTimeProvider)
 
+	happyBirthdayEmailScheduled := HappyBirthdayEmailScheduled(oa.RetrieveAlumnis, oa.EpochTimeProvider, oa.RetrieveEmailTemplateByName, oa.RetrieveUserByAlumniID, oa.SendEmail)
+
 	corsHandler := CorsHandler()
 
 	return App{
-		AddUserHandler:            addUserHandler,
-		LoginUserHandler:          loginUserHandler,
-		AutoLoginUserHandler:      autologinUserHandler,
-		ApproveUserHandler:        approveUserHandler,
-		DenyUserHandler:           denyUserHandler,
-		ForgotPasswordHandler:     forgotPasswordHandler,
-		SetNewPasswordHandler:     setPasswordHandler,
-		AddAlumniHandler:          addAlumniHandler,
-		RetrieveAlumniByIDHandler: retrieveAlumniByIdHandler,
-		RetrieveAllAlumniHandler:  retrieveAllAlumniHandler,
-		ExportCSVHandler:          exportCsvHandler,
-		HappyBirthdayHandler:      happyBirthdayHandler,
-		UpdateAlumniHandler:       updateAlumniHandler,
-		MakeAlumniPublicHandler:   makeAlumniPublicHandler,
-		MakeAlumniPrivateHandler:  makeAlumniPrivateHandler,
-		CorsHandler:               corsHandler,
+		AddUserHandler:              addUserHandler,
+		LoginUserHandler:            loginUserHandler,
+		AutoLoginUserHandler:        autologinUserHandler,
+		ApproveUserHandler:          approveUserHandler,
+		DenyUserHandler:             denyUserHandler,
+		ForgotPasswordHandler:       forgotPasswordHandler,
+		SetNewPasswordHandler:       setPasswordHandler,
+		AddAlumniHandler:            addAlumniHandler,
+		RetrieveAlumniByIDHandler:   retrieveAlumniByIdHandler,
+		RetrieveAllAlumniHandler:    retrieveAllAlumniHandler,
+		ExportCSVHandler:            exportCsvHandler,
+		HappyBirthdayHandler:        happyBirthdayHandler,
+		UpdateAlumniHandler:         updateAlumniHandler,
+		MakeAlumniPublicHandler:     makeAlumniPublicHandler,
+		MakeAlumniPrivateHandler:    makeAlumniPrivateHandler,
+		HappyBirthdayEmailScheduled: happyBirthdayEmailScheduled,
+		CorsHandler:                 corsHandler,
 	}
+}
+
+func (a *App) RunHappyBirthdayEmail() error {
+	return a.HappyBirthdayEmailScheduled()
 }

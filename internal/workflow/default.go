@@ -695,3 +695,69 @@ func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.Ep
 		return hbdResponse, nil
 	}
 }
+
+func HappyBirthdayEmail(retrieveAlumnis db.RetrieveAllAlumniFunc,
+	provideTime time.EpochProviderFunc,
+	getEmailTemplate db.RetrieveEmailTemplateByNameFunc,
+	retrieveUserByAlumniId db.RetrieveUserByAlumniIDFunc,
+	sendEmail email.SendEmailFunc) HappyBirthdayEmailFunc {
+	return func() error {
+		ds := provideTime().ToISO8601().DateString()
+		m := strings.Split(ds, "-")[1]
+		d := strings.Split(ds, "-")[2]
+
+		bday := fmt.Sprintf("%v-%v", m, d)
+		qp := pkg.QueryParams{Limit: -1, Birthday: bday}
+
+		log.Printf("Sending emails to Alumnis with Birthday=%v", bday)
+
+		aa, _, err := retrieveAlumnis(qp, "", true)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to retrieve alumnis")
+		}
+
+		// Send email
+		et, err := getEmailTemplate(internal.HappyBirthdayTemplateName)
+		if err != nil {
+			return errors.Wrapf(err, "workflow - unable to retrieve email template")
+		}
+		for _, a := range aa {
+			user, err := retrieveUserByAlumniId(a.ID.Val())
+			if err != nil {
+				return errors.Wrapf(err, "workflow - unable to retrieve user with alumniId=%v", a.ID.Val())
+			}
+
+			bodyTpl, err := raymond.Parse(et.HTML)
+			if err != nil {
+				return errors.Wrapf(err, "workflow - unable to parse email body template")
+			}
+
+			subjectTpl, err := raymond.Parse(et.Subject)
+			if err != nil {
+				return errors.Wrapf(err, "workflow - unable to parse email subject template")
+			}
+
+			emailBody, err := bodyTpl.Exec(a)
+			if err != nil {
+				return errors.Wrapf(err, "workflow - unable to exec email body template")
+			}
+
+			emailSubject, err := subjectTpl.Exec(a)
+			if err != nil {
+				return errors.Wrapf(err, "workflow - unable to exec email subject template")
+			}
+
+			er := email.SendRequest{
+				Subject:     emailSubject,
+				HTMLContent: emailBody,
+				Recipient:   user.Email,
+				Sender:      internal.EmailRecipient,
+			}
+
+			if err := sendEmail(er); err != nil {
+				return errors.Wrapf(err, "workflow - unable to send email")
+			}
+		}
+		return nil
+	}
+}

@@ -220,6 +220,31 @@ Resources:
             Path: /alumni/{alumniId}/goprivate
             Method: options
 
+  ScheduledFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main-scheduled
+      Timeout: 180
+      MemorySize: 512
+      Runtime: go1.x
+      FunctionName: !Sub ${ServiceName}-scheduled-${Stage}
+      Environment:
+        Variables:
+          MONGO_URI: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:MONGO_URI}}"
+          DB_NAME: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:DB_NAME}}"
+          S3_BUCKET: !Ref AlumniPhotosBucket
+          JWT_SECRET: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:JWT_SECRET}}"
+      Policies:
+        - VPCAccessPolicy: {}
+        - SESCrudPolicy: 
+            IdentityName: benzbraunstein@gmail.com
+      Events:
+        BirthdayEmails:
+          Type: Schedule
+          Properties:
+            Description: "Runs every day at 10AM EST"
+            Schedule: "cron(0 15 * * ? *)"
+
 Outputs:
   Endpoint:
     Description: Api endpoint for the HAFTR Alumni API Gateway

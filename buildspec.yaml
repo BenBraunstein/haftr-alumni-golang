@@ -37,6 +37,7 @@ phases:
 artifacts:
   files:
     - main
+    - main-scheduled
     - dev-configuration.json
     - prod-configuration.json
     - packaged.yaml

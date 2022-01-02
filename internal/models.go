@@ -16,6 +16,7 @@ const (
 	NewAlumniTemplateName      = "NEW_ALUMNI"
 	UpdatedAlumniTemplateName  = "UPDATED_ALUMNI"
 	ForgotPasswordTemplateName = "FORGOT_PASSWORD"
+	HappyBirthdayTemplateName  = "HAPPY_BIRTHDAY"
 )
 
 // User is the internal representation of a user
