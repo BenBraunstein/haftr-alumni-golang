@@ -642,7 +642,11 @@ func SetNewPassword(retrieveResetPassword db.FindResetPasswordFunc,
 
 func HappyBirthday(retrieveAlumnis db.RetrieveAllAlumniFunc, provideTime time.EpochProviderFunc) HappyBirthdayFunc {
 	return func() (pkg.HappyBirthdayResponse, error) {
-		ds := provideTime().ToISO8601().DateString()
+		iso, err := time.New(provideTime().ToISO8601().Val().Local())
+		if err != nil {
+			return pkg.HappyBirthdayResponse{}, errors.Wrap(err, "workflow - unable to create iso time")
+		}
+		ds := iso.DateString()
 		m := strings.Split(ds, "-")[1]
 		d := strings.Split(ds, "-")[2]
 
