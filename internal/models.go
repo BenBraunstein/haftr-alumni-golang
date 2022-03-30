@@ -80,7 +80,7 @@ type Alumni struct {
 	ClassPresident         bool          `bson:"classPresident"`
 	BoardOfTrustees        bool          `bson:"boardOfTrustees"`
 	BoardOfEducation       bool          `bson:"boardOfEducation"`
-	BoardsComment          string        `bson:"boardsComments"`
+	BoardsComment          string        `bson:"boardsComment"`
 	AlumniNewsletters      bool          `bson:"alumniNewsletters"`
 	CommunicationsOutreach bool          `bson:"communicationsOutreach"`
 	ClassReunions          bool          `bson:"classReunions"`
@@ -148,7 +148,7 @@ type UpdateAlumniRequest struct {
 	ClassPresident         bool          `bson:"classPresident,omitempty"`
 	BoardOfTrustees        bool          `bson:"boardOfTrustees,omitempty"`
 	BoardOfEducation       bool          `bson:"boardOfEducation,omitempty"`
-	BoardsComment          string        `bson:"boardsComments,omitempty"`
+	BoardsComment          string        `bson:"boardsComment,omitempty"`
 	AlumniNewsletters      bool          `bson:"alumniNewsletters,omitempty"`
 	CommunicationsOutreach bool          `bson:"communicationsOutreach,omitempty"`
 	ClassReunions          bool          `bson:"classReunions,omitempty"`

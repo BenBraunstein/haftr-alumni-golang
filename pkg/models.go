@@ -77,7 +77,7 @@ type AlumniRequest struct {
 	ClassPresident         bool          `json:"classPresident"`
 	BoardOfTrustees        bool          `json:"boardOfTrustees"`
 	BoardOfEducation       bool          `json:"boardOfEducation"`
-	BoardsComment          string        `json:"boardsComments"`
+	BoardsComment          string        `json:"boardsComment"`
 	AlumniNewsletters      bool          `json:"alumniNewsletters"`
 	CommunicationsOutreach bool          `json:"communicationsOutreach"`
 	ClassReunions          bool          `json:"classReunions"`
@@ -141,7 +141,7 @@ type UpdateAlumniRequest struct {
 	ClassPresident         bool          `json:"classPresident"`
 	BoardOfTrustees        bool          `json:"boardOfTrustees"`
 	BoardOfEducation       bool          `json:"boardOfEducation"`
-	BoardsComment          string        `json:"boardsComments"`
+	BoardsComment          string        `json:"boardsComment"`
 	AlumniNewsletters      bool          `json:"alumniNewsletters"`
 	CommunicationsOutreach bool          `json:"communicationsOutreach"`
 	ClassReunions          bool          `json:"classReunions"`
@@ -203,7 +203,7 @@ type Alumni struct {
 	ClassPresident         bool          `json:"classPresident"`
 	BoardOfTrustees        bool          `json:"boardOfTrustees"`
 	BoardOfEducation       bool          `json:"boardOfEducation"`
-	BoardsComment          string        `json:"boardsComments"`
+	BoardsComment          string        `json:"boardsComment"`
 	AlumniNewsletters      bool          `json:"alumniNewsletters"`
 	CommunicationsOutreach bool          `json:"communicationsOutreach"`
 	ClassReunions          bool          `json:"classReunions"`
