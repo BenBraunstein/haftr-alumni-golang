@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Default: dev
 
+  DBName:
+    Type: String
+    Default: haftr
+
   ServiceName:
     Type: String
     Default: haftr-alumni-golang
@@ -53,7 +57,7 @@ Resources:
       Environment:
         Variables:
           MONGO_URI: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:MONGO_URI}}"
-          DB_NAME: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:DB_NAME}}"
+          DB_NAME: !Sub ${DBName}
           S3_BUCKET: !Ref AlumniPhotosBucket
           JWT_SECRET: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:JWT_SECRET}}"
       Policies:
@@ -231,7 +235,7 @@ Resources:
       Environment:
         Variables:
           MONGO_URI: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:MONGO_URI}}"
-          DB_NAME: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:DB_NAME}}"
+          DB_NAME: !Sub ${DBName}
           S3_BUCKET: !Ref AlumniPhotosBucket
           JWT_SECRET: "{{resolve:secretsmanager:haftr-alumni-golang:SecretString:JWT_SECRET}}"
       Policies:
