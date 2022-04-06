@@ -10,6 +10,7 @@ import (
 const (
 	DefaultPageLimit           = 20
 	EmailRecipient             = "benzbraunstein@gmail.com"
+	NoReplyEmailAddress        = "no-reply@haftralumni.org"
 	PendingUserStatus          = "PENDING"
 	ApprovedUserStatus         = "APPROVED"
 	DeniedUserStatus           = "DENIED"

@@ -254,7 +254,7 @@ func AddAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 			Subject:     emailSubject,
 			HTMLContent: emailBody,
 			Recipient:   internal.EmailRecipient,
-			Sender:      internal.EmailRecipient,
+			Sender:      internal.NoReplyEmailAddress,
 		}
 
 		if err := sendEmail(er); err != nil {
@@ -351,7 +351,7 @@ func UpdateAlumni(retrieveUserById db.RetrieveUserByIDFunc,
 			Subject:     emailSubject,
 			HTMLContent: emailBody,
 			Recipient:   internal.EmailRecipient,
-			Sender:      internal.EmailRecipient,
+			Sender:      internal.NoReplyEmailAddress,
 		}
 
 		if err := sendEmail(er); err != nil {
@@ -586,7 +586,7 @@ func ForgotPassword(retrieveUserByEmail db.RetrieveUserByEmailFunc,
 			Subject:     emailSubject,
 			HTMLContent: emailBody,
 			Recipient:   user.Email,
-			Sender:      internal.EmailRecipient,
+			Sender:      internal.NoReplyEmailAddress,
 		}
 
 		if err := sendEmail(er); err != nil {
@@ -755,7 +755,7 @@ func HappyBirthdayEmail(retrieveAlumnis db.RetrieveAllAlumniFunc,
 				Subject:     emailSubject,
 				HTMLContent: emailBody,
 				Recipient:   user.Email,
-				Sender:      internal.EmailRecipient,
+				Sender:      internal.NoReplyEmailAddress,
 			}
 
 			if err := sendEmail(er); err != nil {
