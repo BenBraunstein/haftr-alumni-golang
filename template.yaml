@@ -67,7 +67,7 @@ Resources:
         - SESCrudPolicy: 
             IdentityName: benzbraunstein@gmail.com
         - SESCrudPolicy: 
-            IdentityName: no-reply@haftralumni.org
+            IdentityName: haftralumni.org
       Events:
         CreateUser:
           Type: Api
