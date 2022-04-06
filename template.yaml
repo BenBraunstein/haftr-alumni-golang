@@ -66,6 +66,8 @@ Resources:
             BucketName: !Ref AlumniPhotosBucket
         - SESCrudPolicy: 
             IdentityName: benzbraunstein@gmail.com
+        - SESCrudPolicy: 
+            IdentityName: no-reply@haftralumni.org
       Events:
         CreateUser:
           Type: Api
