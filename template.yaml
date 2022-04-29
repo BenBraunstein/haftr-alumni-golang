@@ -65,7 +65,7 @@ Resources:
         - S3CrudPolicy:
             BucketName: !Ref AlumniPhotosBucket
         - SESCrudPolicy: 
-            IdentityName: benzbraunstein@gmail.com
+            IdentityName: lifecycles@haftr.org
         - SESCrudPolicy: 
             IdentityName: haftralumni.org
       Events:
@@ -243,7 +243,9 @@ Resources:
       Policies:
         - VPCAccessPolicy: {}
         - SESCrudPolicy: 
-            IdentityName: benzbraunstein@gmail.com
+            IdentityName: lifecycles@haftr.org
+        - SESCrudPolicy: 
+            IdentityName: haftralumni.org
       Events:
         BirthdayEmails:
           Type: Schedule
