@@ -9,7 +9,7 @@ import (
 
 const (
 	DefaultPageLimit           = 20
-	EmailRecipient             = "lifecycles@haftr.org"
+	EmailRecipient             = "Lifecycle@haftr.org"
 	NoReplyEmailAddress        = "no-reply@haftralumni.org"
 	PendingUserStatus          = "PENDING"
 	ApprovedUserStatus         = "APPROVED"

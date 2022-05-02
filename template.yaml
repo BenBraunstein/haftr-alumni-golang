@@ -65,7 +65,7 @@ Resources:
         - S3CrudPolicy:
             BucketName: !Ref AlumniPhotosBucket
         - SESCrudPolicy: 
-            IdentityName: lifecycles@haftr.org
+            IdentityName: Lifecycle@haftr.org
         - SESCrudPolicy: 
             IdentityName: haftralumni.org
       Events:
@@ -243,7 +243,7 @@ Resources:
       Policies:
         - VPCAccessPolicy: {}
         - SESCrudPolicy: 
-            IdentityName: lifecycles@haftr.org
+            IdentityName: Lifecycle@haftr.org
         - SESCrudPolicy: 
             IdentityName: haftralumni.org
       Events:
